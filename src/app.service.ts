@@ -3,9 +3,7 @@ import { Injectable } from '@nestjs/common';
 @Injectable()
 export class AppService {
   getHello(): string {
-    return 'Hello !';
+    return 'Hello to Saint Patrick API!';
   }
-  getUsers(): string[] {
-    return ["juan","pedr"];
-  }
+ 
 }
