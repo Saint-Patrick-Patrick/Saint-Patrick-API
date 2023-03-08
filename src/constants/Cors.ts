@@ -2,7 +2,7 @@ import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.int
 
 
 export const CORS : CorsOptions ={
-    origin: ['*'],
+    origin: '*',
     allowedHeaders: ['Content-Type', 'Authorization',],
     methods: 'GET,PUT,POST,DELETE,OPTIONS,HEAD,PATCH',
     credentials:true,
