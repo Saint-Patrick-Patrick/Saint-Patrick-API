@@ -13,7 +13,7 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
-import { AuthMiddleware } from './entities/auth.middleware';
+import { AuthMiddleware } from './middleware/auth.middleware';
 @Controller('users')
 export class UsersController {
   constructor(
