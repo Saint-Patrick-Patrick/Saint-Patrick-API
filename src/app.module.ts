@@ -18,7 +18,7 @@ import User from './users/entities/user.entity';
         password: configService.get<string>('PGPASSWORD'),
         database: configService.get<string>('PGDATABASE'),
         entities:[User],
-        synchronize:false,
+        synchronize:true,
       }),
       inject: [ConfigService],
     }),
@@ -27,6 +27,7 @@ import User from './users/entities/user.entity';
       isGlobal: true,
     }),
     UsersModule,
+    // aca van todos los modulos
     ],
   controllers: [AppController],
   providers: [AppService],
