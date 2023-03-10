@@ -1,8 +1,10 @@
 import { Controller, Get, Redirect, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { ApiTags } from '@nestjs/swagger';
+import { Request } from 'express';
 import httpStatus from 'http-status';
 
-
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
  @Get('google')
