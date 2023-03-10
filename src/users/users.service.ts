@@ -5,7 +5,6 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { AppService } from 'src/app.service';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
@@ -33,6 +32,8 @@ export class UsersService {
     const createdUser = await this.usersRepo.create(createUserDto);
     return this.usersRepo.save(createdUser);
   }
+
+  
   async login(loginUserDto: LoginUserDto) {
     const { email, password } = loginUserDto;
     const user = await this.findByEmail(email);

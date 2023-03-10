@@ -5,6 +5,7 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import User from './users/entities/user.entity';
+import { AuthModule } from './core/auth/auth.module';
 
 @Module({
   imports: [
@@ -18,7 +19,7 @@ import User from './users/entities/user.entity';
         password: configService.get<string>('PGPASSWORD'),
         database: configService.get<string>('PGDATABASE'),
         entities:[User],
-        synchronize:false,
+        synchronize:true,
       }),
       inject: [ConfigService],
     }),
@@ -27,6 +28,8 @@ import User from './users/entities/user.entity';
       isGlobal: true,
     }),
     UsersModule,
+    AuthModule
+    // aca van todos los modulos
     ],
   controllers: [AppController],
   providers: [AppService],
