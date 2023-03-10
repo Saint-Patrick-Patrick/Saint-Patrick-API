@@ -18,8 +18,14 @@ export class TransactionsController {
     private readonly TransactionsService: TransactionsService,
   ) {}
 
-  @Post('/create')
-  async register(@Body() CreateTransactionsDto: CreateTransactionsDto) {
-    return this.TransactionsService.create(CreateTransactionsDto);
+  // @Post('/create')
+  // async register(@Body() CreateTransactionsDto: CreateTransactionsDto) {
+  //   return this.TransactionsService.create(CreateTransactionsDto);
+  // }
+
+  @Get('/all')
+  findAll(){
+    return this.TransactionsService.findAll();
   }
+
 }

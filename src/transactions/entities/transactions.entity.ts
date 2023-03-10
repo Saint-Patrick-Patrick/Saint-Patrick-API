@@ -1,34 +1,34 @@
 import User from 'src/users/entities/user.entity';
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 
 @Entity({ name: 'transactions' })
-export class Transactions {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
-  @Column({type:'varchar', nullable:true})
-  fromCBU: string;
-
-  @Column({type:'varchar', nullable:true})
-  for: string;
+export class Transaction {
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @Column({type:'varchar'})
+  fromCBU: string;
+
+  @Column({type:'varchar'})
+  for: string;
+
+  @Column({type:'varchar', nullable:true})
   toCVUOrAlias: string;
 
-  @Column({type:'int'})
+  @Column({type:'integer', nullable:true})
   toCardCBU:number;
 
-  @Column({type:'int', nullable:true})
+  @Column({type:'integer'})
   amount: number;
 
-  @Column({type:'varchar', nullable:true, length:8 })
+  @Column({type:'varchar', length:8 })
   date: string;
 
-  @Column({type:'varchar', nullable:true, length:8 })
+  @Column({type:'varchar', length:8 })
   hour: string;
 
-  @OneToMany(() => User, (user) => user)
+  @ManyToOne(() => User, (user) => user)
   user: User
 }
 
-export default Transactions;
+export default Transaction;

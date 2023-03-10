@@ -1,5 +1,5 @@
 import Transactions from 'src/transactions/entities/transactions.entity';
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 
 @Entity({ name: 'users' })
 export class User {
@@ -18,7 +18,13 @@ export class User {
   @Column({ type: 'varchar', length: 100, nullable:true })
   password: string;
 
-  @ManyToOne(()=> Transactions, (transactions)=> transactions)
+  @Column()
+  CVU:string
+
+  @Column()
+  alias:string
+
+  @OneToMany(()=> Transactions, (transactions)=> transactions)
   transactions: Transactions
 }
 

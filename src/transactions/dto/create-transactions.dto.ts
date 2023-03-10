@@ -9,12 +9,9 @@ export class CreateTransactionsDto {
   @IsString()
   @IsNotEmpty()
   for: string;
-
-  @IsString()
-  toCVU: string;
   
   @IsString()
-  toAlias: string;
+  toCVUOrAlias: string;
 
   @IsNumber()
   toCardCBU:number;
@@ -24,10 +21,10 @@ export class CreateTransactionsDto {
   amount: number;
 
   @IsNotEmpty()
-  @IsDate()
+  @IsString()
   @Length(8,8)
   date: string;
-
+  
   @IsNotEmpty()
   @IsString()
   @Length(8,8)
