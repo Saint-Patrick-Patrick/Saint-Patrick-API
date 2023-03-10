@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import Transactions from 'src/transactions/entities/transactions.entity';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 
 @Entity({ name: 'users' })
 export class User {
@@ -16,6 +17,9 @@ export class User {
 
   @Column({ type: 'varchar', length: 100, nullable:true })
   password: string;
+
+  @ManyToOne(()=> Transactions, (transactions)=> transactions)
+  transactions: Transactions
 }
 
 export default User;
