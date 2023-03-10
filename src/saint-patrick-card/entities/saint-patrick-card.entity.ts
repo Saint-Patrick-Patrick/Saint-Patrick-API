@@ -1,6 +1,5 @@
-import SaintPatrickCard from 'src/saint-patrick-card/entities/saint-patrick-card.entity';
-import User from 'src/users/entities/user.entity';
-import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'typeorm';
+import { Wallet } from 'src/wallet/entities/wallet.entity';
+import { Entity, Column, PrimaryGeneratedColumn, OneToOne } from 'typeorm';
 
 
 enum Status{
@@ -8,8 +7,8 @@ enum Status{
    //definir estatus 
 }
 
-@Entity({ name: 'wallet' })
-export class Wallet {
+@Entity({ name: 'SaintPatrickCard' })
+export class SaintPatrickCard {
     @PrimaryGeneratedColumn()
     id: number;
   
@@ -27,12 +26,12 @@ export class Wallet {
 
     @Column({ type: 'enum', enum: Status, default: Status.ACTIVE })
     role: Status;
-
-    @OneToOne(() => SaintPatrickCard, { cascade: true })
-    @JoinColumn()
-    saintPatrickCard: SaintPatrickCard;
   
   
-    @OneToOne(() => User, (user) => user.wallet)
-    user: User;
+    @OneToOne(() => Wallet, (wallet) => wallet.saintPatrickCard)
+    wallet: Wallet;
 }
+
+
+
+export default SaintPatrickCard 

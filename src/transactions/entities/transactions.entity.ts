@@ -3,20 +3,15 @@ import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 
 @Entity({ name: 'Transactions' })
 export class Transactions {
+
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column({type:'varchar'})
-  fromCBU: string;
+  to: string;
 
   @Column({type:'varchar'})
-  for: string;
-
-  @Column({type:'varchar', nullable:true})
-  toCVUOrAlias: string;
-
-  @Column({type:'integer', nullable:true})
-  toCardCBU:number;
+  from: string;
 
   @Column({type:'integer'})
   amount: number;

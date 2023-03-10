@@ -10,6 +10,12 @@ import Transactions from './transactions/entities/transactions.entity';
 import { AuthModule } from './core/auth/auth.module';
 import { WalletModule } from './wallet/wallet.module';
 import { PictureModule } from './picture/picture.module';
+import { CardsModule } from './cards/cards.module';
+import { SaintPatrickCardModule } from './saint-patrick-card/saint-patrick-card.module';
+import Picture from './picture/entities/picture.entity';
+import { Wallet } from './wallet/entities/wallet.entity';
+import { Card } from './cards/entities/card.entity';
+import SaintPatrickCard from './saint-patrick-card/entities/saint-patrick-card.entity';
 
 
 @Module({
@@ -23,12 +29,12 @@ import { PictureModule } from './picture/picture.module';
         username: configService.get<string>('PGUSERNAME'),
         password: configService.get<string>('PGPASSWORD'),
         database: configService.get<string>('PGDATABASE'),
-        entities:[Transactions,User],
+        entities:[Transactions,User, Picture, Wallet, Card,SaintPatrickCard],
         synchronize:true,
       }),
       inject: [ConfigService],
     }),
-    TypeOrmModule.forFeature([User, Transactions]),
+    TypeOrmModule.forFeature([User, Transactions, Picture, Wallet, Card,SaintPatrickCard]),
     ConfigModule.forRoot({
       envFilePath: '.env',
       isGlobal: true,
@@ -37,7 +43,9 @@ import { PictureModule } from './picture/picture.module';
     UsersModule,
     AuthModule,
     WalletModule,
-    PictureModule
+    PictureModule,
+    CardsModule,
+    SaintPatrickCardModule
     // aca van todos los modulos
     ],
   controllers: [AppController],

@@ -1,5 +1,7 @@
+import Picture from 'src/picture/entities/picture.entity';
 import Transactions from 'src/transactions/entities/transactions.entity';
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Wallet } from 'src/wallet/entities/wallet.entity';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, OneToOne, JoinColumn } from 'typeorm';
 
 @Entity({ name: 'users' })
 export class User {
@@ -18,11 +20,14 @@ export class User {
   @Column({ type: 'varchar', length: 100, nullable:true })
   password: string;
 
-  @Column()
-  CVU:string
+  
+  @OneToOne(() => Picture, { cascade: true })
+  @JoinColumn()
+  picture: Picture;
 
-  @Column()
-  alias:string
+  @OneToOne(() => Wallet, { cascade: true })
+  @JoinColumn()
+  wallet: Wallet;
 
   @OneToMany(()=> Transactions, (transactions)=> transactions)
   transactions: Transactions
