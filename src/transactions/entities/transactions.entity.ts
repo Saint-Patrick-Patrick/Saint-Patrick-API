@@ -1,8 +1,8 @@
 import User from 'src/users/entities/user.entity';
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 
-@Entity({ name: 'transactions' })
-export class Transaction {
+@Entity({ name: 'Transactions' })
+export class Transactions {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -31,4 +31,4 @@ export class Transaction {
   user: User
 }
 
-export default Transaction;
+export default Transactions;

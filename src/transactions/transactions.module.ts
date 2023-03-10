@@ -1,14 +1,14 @@
+import User from 'src/users/entities/user.entity';
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { TransactionsService } from './transactions.service';
 import { TransactionsController } from './transactions.controller';
-import Transactions from './entities/Transactions.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppService } from 'src/app.service';
 import { AuthMiddleware } from './middleware/auth.middleware';
-import User from 'src/users/entities/user.entity';
+import Transactions from './entities/transactions.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Transactions]),TypeOrmModule.forFeature([User])],
+  imports: [TypeOrmModule.forFeature([Transactions, User])],
   controllers: [TransactionsController],
   providers: [TransactionsService, AppService, AuthMiddleware],
 })

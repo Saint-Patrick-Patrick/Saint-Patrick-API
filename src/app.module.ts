@@ -24,6 +24,7 @@ import Transactions from './transactions/entities/transactions.entity';
       }),
       inject: [ConfigService],
     }),
+    TypeOrmModule.forFeature([User, Transactions]),
     ConfigModule.forRoot({
       envFilePath: '.env',
       isGlobal: true,

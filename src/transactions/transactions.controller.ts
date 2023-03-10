@@ -15,7 +15,7 @@ import { AuthMiddleware } from './middleware/auth.middleware';
 @Controller('transactions')
 export class TransactionsController {
   constructor(
-    private readonly TransactionsService: TransactionsService,
+    private readonly transactionsService: TransactionsService,
   ) {}
 
   // @Post('/create')
@@ -24,8 +24,8 @@ export class TransactionsController {
   // }
 
   @Get('/all')
-  findAll(){
-    return this.TransactionsService.findAll();
+  async findAll(){
+    return this.transactionsService.findAll();
   }
 
 }
