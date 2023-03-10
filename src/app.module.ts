@@ -19,7 +19,7 @@ import { AuthModule } from './core/auth/auth.module';
         password: configService.get<string>('PGPASSWORD'),
         database: configService.get<string>('PGDATABASE'),
         entities:[User],
-        synchronize:false,
+        synchronize:true,
       }),
       inject: [ConfigService],
     }),
