@@ -29,6 +29,7 @@ import { AuthModule } from './core/auth/auth.module';
     }),
     UsersModule,
     AuthModule
+    // aca van todos los modulos
     ],
   controllers: [AppController],
   providers: [AppService],
