@@ -11,6 +11,22 @@ export class CardService {
     private cardRepository: Repository<Card>,
   ) {}
 
+  async create(card: Card): Promise<Card> {
+    let generatedCardNumber: string;
+    let existingCard: Card;
+    do {
+      generatedCardNumber = generate({creditCardNumberPrefixes: ['4'], length: 16})[0];
+   
+      existingCard = await this.cardRepository.findOne({
+        where: {
+          numberCard: generatedCardNumber,
+        },
+      });
+    } while (existingCard);
+    card.numberCard = generatedCardNumber;
+    return await this.cardRepository.save(card);
+  }
+
   async findAll(): Promise<Card[]> {
     return await this.cardRepository.find();
   }
@@ -18,25 +34,6 @@ export class CardService {
 //   async findOne(id: string): Promise<Card> {
 //     return await this.cardRepository.findOne(id);
 //   }
-
-async create(card: Card): Promise<Card> {
-  let generatedCardNumber: string;
-  let existingCard: Card;
-  do {
-    generatedCardNumber = generate({creditCardNumberPrefixes: ['4'], length: 16})[0];
- 
-    existingCard = await this.cardRepository.findOne({
-      where: {
-        numberCard: generatedCardNumber,
-      },
-    });
-  } while (existingCard);
-  card.numberCard = generatedCardNumber;
-  return await this.cardRepository.save(card);
-}
-
-  
-  
 
   async update(id: number, card: Card): Promise<void> {
     await this.cardRepository.update(id, card);
