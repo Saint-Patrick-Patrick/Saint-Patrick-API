@@ -7,6 +7,8 @@ import { UsersModule } from './users/users.module';
 import { TransactionsModule } from './transactions/transactions.module';
 import User from './users/entities/user.entity';
 import Transactions from './transactions/entities/transactions.entity';
+import { AuthModule } from './core/auth/auth.module';
+
 
 @Module({
   imports: [
@@ -31,6 +33,7 @@ import Transactions from './transactions/entities/transactions.entity';
     }),
     TransactionsModule,
     UsersModule,
+    AuthModule
     // aca van todos los modulos
     ],
   controllers: [AppController],
