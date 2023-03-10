@@ -6,6 +6,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import User from './users/entities/user.entity';
 import { AuthModule } from './core/auth/auth.module';
+import { WalletModule } from './wallet/wallet.module';
+import { PictureModule } from './picture/picture.module';
 
 @Module({
   imports: [
@@ -28,7 +30,9 @@ import { AuthModule } from './core/auth/auth.module';
       isGlobal: true,
     }),
     UsersModule,
-    AuthModule
+    AuthModule,
+    WalletModule,
+    PictureModule
     // aca van todos los modulos
     ],
   controllers: [AppController],
