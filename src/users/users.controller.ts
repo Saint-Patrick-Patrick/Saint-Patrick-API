@@ -7,13 +7,13 @@ import {
   Param,
   Delete,
   Request,
-  UseInterceptors,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
-import { AuthMiddleware } from './middleware/auth.middleware';
+import { ApiTags } from '@nestjs/swagger';
+@ApiTags('users')
 @Controller('users')
 export class UsersController {
   constructor(

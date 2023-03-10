@@ -30,6 +30,7 @@ import Transactions from './transactions/entities/transactions.entity';
     }),
     TransactionsModule,
     UsersModule,
+    // aca van todos los modulos
     ],
   controllers: [AppController],
   providers: [AppService],
