@@ -26,7 +26,7 @@ export class Wallet {
     card_number: number;
 
     @Column({ type: 'enum', enum: Status, default: Status.ACTIVE })
-    role: Status;
+    status: Status;
 
     @OneToOne(() => SaintPatrickCard, { cascade: true })
     @JoinColumn()

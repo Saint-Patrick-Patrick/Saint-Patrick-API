@@ -1,3 +1,4 @@
+import { Card } from 'src/cards/entities/card.entity';
 import Picture from 'src/picture/entities/picture.entity';
 import Transactions from 'src/transactions/entities/transactions.entity';
 import { Wallet } from 'src/wallet/entities/wallet.entity';
@@ -17,8 +18,11 @@ export class User {
   @Column({ type: 'varchar', length: 100, unique: true, nullable:true })
   email: string;
 
-  @Column({ type: 'varchar', length: 100, nullable:true })
+  @Column({ type: 'varchar', nullable:true })
   password: string;
+
+  @OneToMany(() => Card, card => card.user)
+  cards: Card[];
 
   
   @OneToOne(() => Picture, { cascade: true })
