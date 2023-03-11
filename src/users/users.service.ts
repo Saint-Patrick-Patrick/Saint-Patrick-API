@@ -65,8 +65,6 @@ export class UsersService {
       user = await this.usersRepo.create(body);
       await this.usersRepo.save(user);
     }
-    console.log(body);
-    
     const token = await this.generateToken(user);
     return {
       user,

@@ -20,9 +20,10 @@ export class AuthController {
  }
  @Get('google/callback')
  @UseGuards(AuthGuard('google'))
- async googleLoginRedirect(@Req() req:Request& { user?: any }):Promise<any>{
+ async googleLoginRedirect(@Req() req:Request & { user?: any }):Promise<any>{
    return await this.userService.findOrCreate(req.user);
  }
+
  @Get('facebook')
  @UseGuards(AuthGuard('facebook'))
  async facebookLogin():Promise<any>{
@@ -30,7 +31,7 @@ export class AuthController {
  }
  @Get('facebook/callback')
  @UseGuards(AuthGuard('facebook'))
- async facebookLoginRedirect(@Req() req:Request):Promise<any>{   
-    return this.userService.findOrCreate(req.body);
+ async facebookLoginRedirect(@Req() req:Request & { user?: any }):Promise<any>{   
+     return await this.userService.findOrCreate(req.user);
  }
 }
