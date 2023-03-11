@@ -17,6 +17,9 @@ export class UsersModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(AuthMiddleware)
-      .forRoutes({ path: 'users/update', method: RequestMethod.PATCH });
+      .forRoutes(
+        { path: 'users/update', method: RequestMethod.PATCH },
+        { path: 'users/auth', method: RequestMethod.GET },
+      );
   }
 }

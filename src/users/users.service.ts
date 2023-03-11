@@ -38,7 +38,7 @@ export class UsersService {
       password: hashedPassword,
     });
     const user = await this.usersRepo.save(createdUser);
-    const token = this.generateToken(user);
+    const token = await this.generateToken(user);
 
     return {
       user,
@@ -53,7 +53,7 @@ export class UsersService {
     if (!user || !bcrypt.compareSync(password, user.password))
       throw new UnauthorizedException();
 
-    const token = this.generateToken(user);
+    const token = await this.generateToken(user);
     return { user, token };
   }
 
@@ -81,7 +81,11 @@ export class UsersService {
   }
 
   async findOne(id: number) {
-    return this.usersRepo.findOne({ where: { id } });
+    return this.usersRepo.findOne({
+      where: { id },
+      select: ["id", "firstname", "lastname", "email"],
+      relations: ["wallet", "cards"],
+    });
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {

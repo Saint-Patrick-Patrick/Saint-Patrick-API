@@ -8,8 +8,6 @@ import { ConfigService } from '@nestjs/config';
 export class AuthMiddleware implements NestMiddleware {
     constructor(private readonly configService: ConfigService){}
   async use(req:Request & { user?: any }, res: Response, next: NextFunction) {
-    console.log('adentro');
-    
     const token = req.headers.authorization?.split(' ')[1];
     if (!token) {
       return res.status(UNAUTHORIZED).json({ message: 'Unauthorized' });
