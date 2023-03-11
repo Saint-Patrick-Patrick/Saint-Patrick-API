@@ -13,6 +13,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { ApiTags } from '@nestjs/swagger';
+import User from './entities/user.entity';
 
 
 @ApiTags('users')
@@ -23,7 +24,7 @@ export class UsersController {
   ) {}
 
   @Post('register')
-  async register(@Body() createUserDTO: CreateUserDto) {
+  async register(@Body() createUserDTO: CreateUserDto): Promise<{ user: User, token: any }> {
     return this.usersService.create(createUserDTO);
   }
 
@@ -42,7 +43,7 @@ export class UsersController {
     return this.usersService.findOne(+id);
   }
   @Patch('update')
-  async update(@Request() user, @Body() updateUserDto: UpdateUserDto){
+  async update(@Request() user, @Body() updateUserDto: UpdateUserDto): Promise<User>{
     return this.usersService.update(user.id , updateUserDto);
   }
 

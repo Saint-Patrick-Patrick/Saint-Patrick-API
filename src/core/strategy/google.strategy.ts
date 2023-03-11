@@ -8,12 +8,11 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     super({
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: ` ${process.env.URL_BACK}/auth/google/callback`,
-      scope: ['email', 'public_profile'],
+      callbackURL: `${process.env.URL_BACK}/auth/google/callback`,
+      scope: ['profile', 'email'],
       profileFields: ['id', 'displayName', 'name', 'emails', 'picture.type(large)']
     });
-  }
-
+  }  
   async validate(
     accessToken: string,
     refreshToken: string,
@@ -23,14 +22,12 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     const { given_name, family_name, email, picture } = profile._json;
     
     const user = {
-      firstName: given_name,
-      lastName: family_name,
+      firstname: given_name,
+      lastname: family_name,
       email,
       pictureUrl: picture,
       accessToken,
     };
-    console.log(user);
-
     return done(null, user);
   }
 }

@@ -36,5 +36,6 @@ SwaggerModule.setup('documentation', app, document);
   app.useGlobalFilters(new CustomExceptionFilter());
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
   await app.listen(process.env.PORT || 4000);
+  
 }
 bootstrap();

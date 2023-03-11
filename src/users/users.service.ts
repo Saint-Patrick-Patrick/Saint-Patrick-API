@@ -20,21 +20,33 @@ import { ConfigService } from '@nestjs/config';
 export class UsersService {
   constructor(
     @InjectRepository(User) private usersRepo: Repository<User>,
-    private readonly configService: ConfigService
+    private readonly configService: ConfigService,
   ) {}
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
+  async create(
+    createUserDto: CreateUserDto,
+  ): Promise<{ user: User; token: any }> {
     const existingUser = await this.findByEmail(createUserDto.email);
+
     if (existingUser) {
       throw new BadRequestException('Email already registered');
     }
-    createUserDto.password = bcrypt.hashSync(createUserDto.password, SALT);
-    const createdUser = await this.usersRepo.create(createUserDto);
-    return this.usersRepo.save(createdUser);
+
+    const hashedPassword = bcrypt.hashSync(createUserDto.password, SALT);
+    const createdUser = this.usersRepo.create({
+      ...createUserDto,
+      password: hashedPassword,
+    });
+    const user = await this.usersRepo.save(createdUser);
+    const token = this.generateToken(user);
+
+    return {
+      user,
+      token,
+    };
   }
 
-  
-  async login(loginUserDto: LoginUserDto) {
+  async login(loginUserDto: LoginUserDto): Promise<{ user: User; token: any }> {
     const { email, password } = loginUserDto;
     const user = await this.findByEmail(email);
 
@@ -42,7 +54,24 @@ export class UsersService {
       throw new UnauthorizedException();
 
     const token = this.generateToken(user);
-    return token;
+    return { user, token };
+  }
+
+  async findOrCreate(
+    body: CreateUserDto,
+  ): Promise<{ user: User; token: string }> {
+    let user = await this.findByEmail(body.email);
+    if (!user) {
+      user = await this.usersRepo.create(body);
+      await this.usersRepo.save(user);
+    }
+    console.log(body);
+    
+    const token = await this.generateToken(user);
+    return {
+      user,
+      token,
+    };
   }
 
   findAll() {
@@ -74,8 +103,8 @@ export class UsersService {
     }
     return this.usersRepo.delete(id);
   }
-  private async generateToken(user: User ){
-    const token = await jwt.sign(
+  private async generateToken(user: User) {
+    const token = jwt.sign(
       {
         id: user.id,
         email: user.email,
