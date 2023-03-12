@@ -7,16 +7,21 @@ import { AuthMiddleware } from '../core/middleware/auth.middleware';
 import Transactions from 'src/transactions/entities/transactions.entity';
 import { Card } from 'src/cards/entities/card.entity';
 import Picture from 'src/picture/entities/picture.entity';
+import { WalletService } from 'src/wallet/wallet.service';
+import { Wallet } from 'src/wallet/entities/wallet.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Transactions, Card, Picture])],
+  imports: [TypeOrmModule.forFeature([User, Transactions, Card, Picture,Wallet])],
   controllers: [UsersController],
-  providers: [UsersService, AuthMiddleware],
+  providers: [UsersService, AuthMiddleware, WalletService],
 })
 export class UsersModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(AuthMiddleware)
-      .forRoutes({ path: 'users/update', method: RequestMethod.PATCH });
+      .forRoutes(
+        { path: 'users/update', method: RequestMethod.PATCH },
+        { path: 'users/auth', method: RequestMethod.GET },
+      );
   }
 }

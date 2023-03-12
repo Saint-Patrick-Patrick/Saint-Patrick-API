@@ -3,10 +3,16 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
 import httpStatus from 'http-status';
+import { UsersService } from 'src/users/users.service';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
+   constructor(
+      private readonly userService: UsersService,
+   ){}
+
+
  @Get('google')
  @UseGuards(AuthGuard('google'))
  async googleLogin():Promise<any>{
@@ -14,12 +20,10 @@ export class AuthController {
  }
  @Get('google/callback')
  @UseGuards(AuthGuard('google'))
- @Redirect('',302)
- async googleLoginRedirect(@Req() req:Request):Promise<any>{
-    console.log(req);
-    
-    return 
+ async googleLoginRedirect(@Req() req:Request & { user?: any }):Promise<any>{
+   return await this.userService.findOrCreate(req.user);
  }
+
  @Get('facebook')
  @UseGuards(AuthGuard('facebook'))
  async facebookLogin():Promise<any>{
@@ -27,10 +31,7 @@ export class AuthController {
  }
  @Get('facebook/callback')
  @UseGuards(AuthGuard('facebook'))
- @Redirect('',302)
- async facebookLoginRedirect(@Req() req:Request):Promise<any>{
-    console.log(req);
-    
-    return httpStatus.OK;
+ async facebookLoginRedirect(@Req() req:Request & { user?: any }):Promise<any>{   
+     return await this.userService.findOrCreate(req.user);
  }
 }
