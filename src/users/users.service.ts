@@ -15,12 +15,14 @@ import { EXPIRED_TOKEN, SALT } from 'src/constants/contansts';
 import { plainToClass } from 'class-transformer';
 import * as jwt from 'jsonwebtoken';
 import { ConfigService } from '@nestjs/config';
+import { WalletService } from 'src/wallet/wallet.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) private usersRepo: Repository<User>,
     private readonly configService: ConfigService,
+    private readonly walletService: WalletService,
   ) {}
 
   async create(
@@ -32,10 +34,12 @@ export class UsersService {
       throw new BadRequestException('Email already registered');
     }
 
-    const hashedPassword = bcrypt.hashSync(createUserDto.password, SALT);
+    const wallet = await this.walletService.createRandomWallet();
+    const hashedPassword = await bcrypt.hashSync(createUserDto.password, SALT);
     const createdUser = this.usersRepo.create({
       ...createUserDto,
       password: hashedPassword,
+      wallet,
     });
     const user = await this.usersRepo.save(createdUser);
     const token = await this.generateToken(user);
@@ -63,6 +67,7 @@ export class UsersService {
     let user = await this.findByEmail(body.email);
     if (!user) {
       user = await this.usersRepo.create(body);
+      user.wallet = await this.walletService.createRandomWallet();
       await this.usersRepo.save(user);
     }
     const token = await this.generateToken(user);
@@ -83,8 +88,8 @@ export class UsersService {
   async findOne(id: number) {
     return this.usersRepo.findOne({
       where: { id },
-      select: ["id", "firstname", "lastname", "email"],
-      relations: ["wallet", "cards"],
+      select: ['id', 'firstname', 'lastname', 'email'],
+      relations: ['wallet', 'cards'],
     });
   }
 
@@ -114,7 +119,6 @@ export class UsersService {
       this.configService.get<string>('JWT_SECRET'),
       { expiresIn: EXPIRED_TOKEN },
     );
-
     return token;
   }
 }
