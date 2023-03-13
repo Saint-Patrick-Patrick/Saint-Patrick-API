@@ -31,9 +31,9 @@ export class CardService {
     return await this.cardRepository.find();
   }
 
-//   async findOne(id: string): Promise<Card> {
-//     return await this.cardRepository.findOne(id);
-//   }
+  async findOne(id: string): Promise<Card> {
+    return await this.cardRepository.findOne({where:{id}});
+  }
 
   async update(id: number, card: Card): Promise<void> {
     await this.cardRepository.update(id, card);
