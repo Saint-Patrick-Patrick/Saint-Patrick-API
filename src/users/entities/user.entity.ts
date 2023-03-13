@@ -9,22 +9,22 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', length: 50, nullable:true })
+  @Column({ type: 'varchar', length: 50, nullable: true })
   firstname: string;
 
-  @Column({ type: 'varchar', length: 50, nullable:true })
+  @Column({ type: 'varchar', length: 50, nullable: true })
   lastname: string;
 
-  @Column({ type: 'varchar', length: 100, unique: true, nullable:true })
+  @Column({ type: 'varchar', length: 100, unique: true, nullable: true })
   email: string;
 
-  @Column({ type: 'varchar', nullable:true })
+  @Column({ type: 'varchar', nullable: true })
   password: string;
 
-  @OneToMany(() => Card, card => card.user)
-  cards: Card[];
+  @OneToOne(() => Card, card => card.user)
+  @JoinColumn()
+  card: Card;
 
-  
   @OneToOne(() => Picture, { cascade: true })
   @JoinColumn()
   picture: Picture;
@@ -33,8 +33,8 @@ export class User {
   @JoinColumn()
   wallet: Wallet;
 
-  @OneToMany(()=> Transactions, (transactions)=> transactions)
-  transactions: Transactions
+  @OneToMany(() => Transactions, transactions => transactions)
+  transactions: Transactions;
 }
 
 export default User;

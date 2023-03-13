@@ -1,5 +1,5 @@
-import User from 'src/users/entities/user.entity';
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import { User } from 'src/users/entities/user.entity';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToOne } from 'typeorm';
 
 @Entity({ name: 'cards' })
 export class Card {
@@ -15,9 +15,8 @@ export class Card {
   @Column({ type: 'varchar', length: 4, unique: true, nullable: true })
   securityPin?: string;
 
-  @ManyToOne(() => User, user => user.cards)
+  @OneToOne(() => User, user => user.card)
   user: User;
-  
 }
 
 
