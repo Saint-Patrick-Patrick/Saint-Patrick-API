@@ -1,4 +1,4 @@
-import User from 'src/users/entities/user.entity';
+import { User } from 'src/users/entities/user.entity';
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 
 
@@ -38,7 +38,7 @@ export class Card {
   @Column({ type: 'enum', enum: Status, default: Status.ACTIVE })
   status: Status;
 
-  @ManyToOne(() => User, user => user.cards)
+  @ManyToOne(() => User, user => user.card)
   user: User;
   
 }
