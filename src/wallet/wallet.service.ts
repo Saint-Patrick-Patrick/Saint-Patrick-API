@@ -121,12 +121,12 @@ export class WalletService {
     return 'This action adds a new wallet';
   }
 
-  findAll() {
+  findAll(): Promise< Wallet[] | []> {
     return this.walletRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} wallet`;
+  async findOne(id: number) : Promise<Wallet | undefined> {
+    return this.walletRepository.findOneBy({id});
   }
 
   update(id: number, updateWalletDto: UpdateWalletDto) {

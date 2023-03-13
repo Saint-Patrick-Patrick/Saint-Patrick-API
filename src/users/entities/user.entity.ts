@@ -34,7 +34,7 @@ export class User {
   wallet: Wallet;
 
   @OneToMany(()=> Transactions, (transactions)=> transactions)
-  transactions: Transactions
+  transactions: Transactions[];
 }
 
 export default User;
