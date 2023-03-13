@@ -1,4 +1,4 @@
-import { Card } from 'src/cards/entities/card.entity';
+import { Card } from 'src/card/entities/card.entity';
 import Picture from 'src/picture/entities/picture.entity';
 import Transactions from 'src/transactions/entities/transactions.entity';
 import { Wallet } from 'src/wallet/entities/wallet.entity';

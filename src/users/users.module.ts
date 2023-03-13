@@ -5,10 +5,10 @@ import User from './entities/user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthMiddleware } from '../core/middleware/auth.middleware';
 import Transactions from 'src/transactions/entities/transactions.entity';
-import { Card } from 'src/cards/entities/card.entity';
 import Picture from 'src/picture/entities/picture.entity';
 import { WalletService } from 'src/wallet/wallet.service';
 import { Wallet } from 'src/wallet/entities/wallet.entity';
+import { Card } from 'src/card/entities/card.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User, Transactions, Card, Picture,Wallet])],

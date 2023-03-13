@@ -10,12 +10,12 @@ import Transactions from './transactions/entities/transactions.entity';
 import { AuthModule } from './core/auth/auth.module';
 import { WalletModule } from './wallet/wallet.module';
 import { PictureModule } from './picture/picture.module';
-import { CardsModule } from './cards/cards.module';
 import { SaintPatrickCardModule } from './saint-patrick-card/saint-patrick-card.module';
 import Picture from './picture/entities/picture.entity';
 import { Wallet } from './wallet/entities/wallet.entity';
-import { Card } from './cards/entities/card.entity';
 import SaintPatrickCard from './saint-patrick-card/entities/saint-patrick-card.entity';
+import { Card } from './card/entities/card.entity';
+import { CardModule } from './card/card.module';
 
 
 @Module({
@@ -44,7 +44,7 @@ import SaintPatrickCard from './saint-patrick-card/entities/saint-patrick-card.e
     AuthModule,
     WalletModule,
     PictureModule,
-    CardsModule,
+    CardModule,
     SaintPatrickCardModule
     // aca van todos los modulos
     ],
