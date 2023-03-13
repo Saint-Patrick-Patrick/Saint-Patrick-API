@@ -3,15 +3,17 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Card } from './entities/card.entity';
 import { generate } from 'creditcard-generator';
+import User from 'src/users/entities/user.entity';
 
 @Injectable()
 export class CardService {
   constructor(
     @InjectRepository(Card)
     private cardRepository: Repository<Card>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
   ) {}
-
-  async create(card: Card): Promise<Card> {
+  async create(card: Card, userId: number): Promise<Card> {
     let generatedCardNumber: string;
     let existingCard: Card;
     do {
@@ -24,7 +26,18 @@ export class CardService {
       });
     } while (existingCard);
     card.numberCard = generatedCardNumber;
+    const user = await this.userRepository.findOne({where:{ id: userId }});
+    card.user = user;
     return await this.cardRepository.save(card);
+  }
+  
+  async findOneByUserId(userId: number): Promise<Card> {
+    const card = await this.cardRepository
+      .createQueryBuilder('card')
+      .leftJoinAndSelect('card.user', 'user')
+      .where('user.id = :userId', { userId })
+      .getOne();
+    return card;
   }
 
   async findAll(): Promise<Card[]> {
