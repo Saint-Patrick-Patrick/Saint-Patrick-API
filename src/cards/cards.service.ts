@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common/exceptions';
 import { InjectRepository } from '@nestjs/typeorm';
+import { plainToClass } from 'class-transformer';
 import { Repository } from 'typeorm';
 import { CreateCardDto } from './dto/create-card.dto';
 import { UpdateCardDto } from './dto/update-card.dto';
@@ -24,13 +26,25 @@ export class CardsService {
         return await this.cardRepo.findOneBy({card_number});
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} card`;
+ async findOne(
+    id: number
+    ) : Promise<Card | undefined> {
+    return await this.cardRepo.findOne({
+      relations:{user:true},
+      where:{id}
+    });
   }
 
-  update(id: number, updateCardDto: UpdateCardDto) {
-    return `This action updates a #${id} card`;
-  }
+  async update(
+    id: number, updateCardDto: UpdateCardDto
+    ) : Promise<Card | undefined>{
+    const card:Card = await this.findOne(id);
+    if(!card)
+      throw new NotFoundException('Card not found');
+      Object.assign(card, updateCardDto);
+      const updateCard:Card = await this.cardRepo.save(card);
+      return plainToClass(Card, updateCard) 
+    }
 
   remove(id: number) {
     return `This action removes a #${id} card`;

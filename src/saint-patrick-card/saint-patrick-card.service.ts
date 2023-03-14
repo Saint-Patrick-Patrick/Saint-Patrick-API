@@ -1,5 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { plainToClass } from 'class-transformer';
+import { Wallet } from 'src/wallet/entities/wallet.entity';
 import { Repository } from 'typeorm';
 import { CreateSaintPatrickCardDto } from './dto/create-saint-patrick-card.dto';
 import { UpdateSaintPatrickCardDto } from './dto/update-saint-patrick-card.dto';
@@ -27,12 +29,24 @@ export class SaintPatrickCardService {
         });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} saintPatrickCard`;
+  async findOne(
+    id: number
+    ): Promise<SaintPatrickCard | undefined> {
+    return await this.saintPatrickCardRepo.findOne({
+      relations:{wallet:true},
+      where:{id}
+    });
   }
 
-  update(id: number, updateSaintPatrickCardDto: UpdateSaintPatrickCardDto) {
-    return `This action updates a #${id} saintPatrickCard`;
+  async update(
+    id: number, updateSaintPatrickCardDto: UpdateSaintPatrickCardDto
+    ): Promise<SaintPatrickCard | undefined> {
+      const saintPatrickCard:SaintPatrickCard = await this.findOne(id)
+      if(!saintPatrickCard) 
+        throw new NotFoundException('wallet not found')
+      Object.assign(saintPatrickCard, updateSaintPatrickCardDto)
+      const updatedSaint = await this.saintPatrickCardRepo.save(saintPatrickCard);
+      return plainToClass(SaintPatrickCard, updatedSaint);
   }
 
   remove(id: number) {

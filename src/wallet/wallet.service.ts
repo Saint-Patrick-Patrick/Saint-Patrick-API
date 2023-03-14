@@ -148,13 +148,15 @@ export class WalletService {
     });
   }
 
-  async update(id: number, updateWalletDto: UpdateWalletDto) {
-    const wallet = await this.findOne(id)
-    if(!wallet) 
-      throw new NotFoundException('wallet not found')
-    Object.assign(wallet, updateWalletDto)
-    const updatedWallet = await this.walletRepo.save(wallet);
-    return plainToClass(Wallet, updatedWallet);
+  async update(
+    id: number, updateWalletDto: UpdateWalletDto
+    ): Promise<Wallet> {
+      const wallet:Wallet = await this.findOne(id)
+      if(!wallet) 
+        throw new NotFoundException('wallet not found')
+      Object.assign(wallet, updateWalletDto)
+      const updatedWallet = await this.walletRepo.save(wallet);
+      return plainToClass(Wallet, updatedWallet);
   }
 
   remove(id: number) {
@@ -169,26 +171,32 @@ export class WalletService {
       if(!cardExternal && !cardSaint) 
         throw new BadRequestException('Unexpected error')
       const wallet = await this.findOne(idWallet);
+        if(!wallet)
+          throw new NotFoundException('Wallet not found')
       if(cardExternal){
+        //AQUI TENGO QUE VERIFICAR QUE LA FECHA ACTUAL SEA LA MISMA O INFERIOR ALA DE LA CARD
+        const dateOnly = Date.now();
+        if(cardExternal.Expiration_date)
         if(cardExternal.amount < amount)
-          throw new NotFoundException('card without funds');
-        return this.calculateAddFounds(amount, wallet, cardExternal, null);
+          throw new NotFoundException('Card without funds');
+        return await this.calculateAddFounds(amount, wallet, cardExternal, null);
       }else{
         if(cardSaint.wallet.cvu === wallet.cvu)
-          throw new BadRequestException('ups unexpected error');
+          throw new BadRequestException('Ups unexpected error');
         if(cardSaint.wallet.amount < amount)
-          throw new NotFoundException('card without funds');
-        return this.calculateAddFounds(amount, wallet, null, cardSaint);
+          throw new NotFoundException('Card without funds');
+        return await this.calculateAddFounds(amount, wallet, null, cardSaint);
       }
     }
     
     private calculateAddFounds(
-      amount: number, wallet: Wallet, card: Card, cardSaint:SaintPatrickCard
-      ){
+      amount: number, wallet: Wallet, card: Card | undefined, cardSaint:SaintPatrickCard | undefined
+      ) : Promise<Wallet | undefined>{
         const updateWalletDto:UpdateWalletDto = {...wallet, amount: wallet.amount + amount};
-        let newAmountCard = card? card.amount - amount : cardSaint.wallet.amount - amount;
-          ///continuar
-          //falta el updateDto de las cards
+        const newAmountCard:number = card? card.amount - amount : cardSaint.wallet.amount - amount;
+        card?
+          this.cardsService.update(card.id, {...card, amount:newAmountCard}):
+          this.update(cardSaint.wallet.id, {...cardSaint.wallet,amount:newAmountCard})
         return this.update(wallet.id, updateWalletDto);
     }
 }
