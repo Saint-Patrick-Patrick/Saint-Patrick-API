@@ -1,26 +1,22 @@
 import User from 'src/users/entities/user.entity';
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import { Status } from 'src/constants/contansts';
 
-
-enum Status{
-    //definir enum
-    ACTIVE="active"
-}
 @Entity({ name: 'cards' })
 export class Card {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', length: 16, nullable: true })
+  @Column({ type: 'varchar', length: 16, nullable: true, unique:true })
   cbu: string;
 
-  @Column()
+  @Column({type: 'varchar', unique:true})
   alias: string;
 
   @Column({ type: 'decimal', precision: 10, scale: 2 })
   amount: number;
 
-  @Column({ type: 'numeric', nullable:true })
+  @Column({ type: 'numeric', nullable:true, unique:true })
   card_number: number;
   
   @Column({ type: 'varchar', nullable:true })

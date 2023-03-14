@@ -10,16 +10,22 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { WalletService } from 'src/wallet/wallet.service';
 import { Wallet } from 'src/wallet/entities/wallet.entity';
+import { CardsService } from 'src/cards/cards.service';
+import { Card } from 'src/cards/entities/card.entity';
+import { SaintPatrickCardService } from 'src/saint-patrick-card/saint-patrick-card.service';
+import SaintPatrickCard from 'src/saint-patrick-card/entities/saint-patrick-card.entity';
 
 @Module({
-  imports: [PassportModule, TypeOrmModule.forFeature([User,Wallet]), ConfigModule],
+  imports: [PassportModule, TypeOrmModule.forFeature([User,Wallet,Card, SaintPatrickCard]), ConfigModule],
   providers: [
     AuthService,
     GoogleStrategy,
     FacebookStrategy,
     UsersService,
     ConfigService,
-    WalletService
+    WalletService,
+    CardsService,
+    SaintPatrickCardService
   ],
   controllers: [AuthController],
 })

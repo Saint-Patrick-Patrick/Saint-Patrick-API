@@ -17,9 +17,9 @@ export class WalletController {
     return this.walletService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.walletService.findOne(+id);
+  @Get(':walletId')
+  findOne(@Param('walletId') walletId: string) {
+    return this.walletService.findOne(+walletId);
   }
 
   @Patch(':id')

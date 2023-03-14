@@ -7,11 +7,7 @@ import {
   OneToOne,
   JoinColumn,
 } from 'typeorm';
-
-enum Status {
-  ACTIVE = 'active',
-  //definir estatus
-}
+import { Status } from 'src/constants/contansts';
 
 @Entity({ name: 'wallet' })
 export class Wallet {

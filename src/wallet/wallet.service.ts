@@ -1,25 +1,39 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateWalletDto } from './dto/create-wallet.dto';
 import { UpdateWalletDto } from './dto/update-wallet.dto';
 import { Wallet } from './entities/wallet.entity';
 import {Chance} from 'chance';
+import { CardsService } from 'src/cards/cards.service';
+import { Card } from 'src/cards/entities/card.entity';
+import SaintPatrickCard from 'src/saint-patrick-card/entities/saint-patrick-card.entity';
+import { SaintPatrickCardService } from 'src/saint-patrick-card/saint-patrick-card.service';  
+import { MethodNotAllowedException, NotFoundException } from '@nestjs/common/exceptions';
+import { plainToClass } from 'class-transformer';
+
 
 const chance = new Chance();
 
 @Injectable()
 export class WalletService {
   constructor(
-    @InjectRepository(Wallet) private walletRepository: Repository<Wallet>,
+    @InjectRepository(Wallet) private walletRepo: Repository<Wallet>,
+    private readonly cardsService: CardsService,
+    private readonly saintPatrickCardService: SaintPatrickCardService,
   ) {}
+
   async createRandomWallet(): Promise<Wallet> {
-    const wallet = await this.walletRepository.create({
+    const wallet = await this.walletRepo.create({
       cvu: this.generateRandomCvu(),
       alias: await this.generateRandomAlias(),
       amount: await this.generateRandomAmount(),
     });
-    return await this.walletRepository.save(wallet);
+    return await this.walletRepo.save(wallet);
   }
   private generateRandomCvu(): string {
     const bankIdentifier = '007'; // Identificador del banco (siempre es '007' para bancos en Argentina)
@@ -122,18 +136,59 @@ export class WalletService {
   }
 
   findAll(): Promise< Wallet[] | []> {
-    return this.walletRepository.find();
+    return this.walletRepo.find({
+      relations:{user:true,saintPatrickCard:true}
+    });
   }
 
   async findOne(id: number) : Promise<Wallet | undefined> {
-    return this.walletRepository.findOneBy({id});
+    return this.walletRepo.findOne({
+      relations:{user:true,saintPatrickCard:true},
+      where:{id}
+    });
   }
 
-  update(id: number, updateWalletDto: UpdateWalletDto) {
-    return `This action updates a #${id} wallet`;
+  async update(id: number, updateWalletDto: UpdateWalletDto) {
+    const wallet = await this.findOne(id)
+    if(!wallet) 
+      throw new NotFoundException('wallet not found')
+    Object.assign(wallet, updateWalletDto)
+    const updatedWallet = await this.walletRepo.save(wallet);
+    return plainToClass(Wallet, updatedWallet);
   }
 
   remove(id: number) {
     return `This action removes a #${id} wallet`;
   }
+
+  async addFunds(
+    amount:number, card_number:number , idWallet: number
+    ){
+      const cardExternal: Card | undefined = await this.cardsService.findOneByCardNumber(card_number);
+      const cardSaint: SaintPatrickCard | undefined = await this.saintPatrickCardService.findOneByCardNumber(card_number);
+      if(!cardExternal && !cardSaint) 
+        throw new BadRequestException('Unexpected error')
+      const wallet = await this.findOne(idWallet);
+      if(cardExternal){
+        if(cardExternal.amount < amount)
+          throw new NotFoundException('card without funds');
+        return this.calculateAddFounds(amount, wallet, cardExternal, null);
+      }else{
+        if(cardSaint.wallet.cvu === wallet.cvu)
+          throw new BadRequestException('ups unexpected error');
+        if(cardSaint.wallet.amount < amount)
+          throw new NotFoundException('card without funds');
+        return this.calculateAddFounds(amount, wallet, null, cardSaint);
+      }
+    }
+    
+    private calculateAddFounds(
+      amount: number, wallet: Wallet, card: Card, cardSaint:SaintPatrickCard
+      ){
+        const updateWalletDto:UpdateWalletDto = {...wallet, amount: wallet.amount + amount};
+        let newAmountCard = card? card.amount - amount : cardSaint.wallet.amount - amount;
+          ///continuar
+          //falta el updateDto de las cards
+        return this.update(wallet.id, updateWalletDto);
+    }
 }
