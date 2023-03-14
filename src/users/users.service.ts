@@ -86,18 +86,21 @@ export class UsersService {
   }
 
   async findOne(id: number) {
-    return this.usersRepo.findOne({
+    const user = await this.usersRepo.findOne({
       where: { id },
       select: ['id', 'firstname', 'lastname', 'email'],
       relations: ['wallet', 'card'],
     });
+
+    if (!user) throw new NotFoundException(`User with ID ${id} not found`);
+
+    return user;
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
     const user = await this.findOne(id);
-    if (!user) {
-      throw new NotFoundException(`User with ID ${id} not found`);
-    }
+    if (!user) throw new NotFoundException(`User with ID ${id} not found`);
+
     Object.assign(user, updateUserDto);
     const updatedUser = await this.usersRepo.save(user);
     return plainToClass(User, updatedUser);

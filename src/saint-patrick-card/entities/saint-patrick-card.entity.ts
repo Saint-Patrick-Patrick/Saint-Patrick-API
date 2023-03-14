@@ -31,3 +31,5 @@ export class SaintPatrickCard {
   @JoinColumn()
   wallet: Wallet;
 }
+
+export default SaintPatrickCard;
