@@ -22,33 +22,37 @@ export class SaintPatrickCardService {
     const { walletId, ...rest } = createSaintPatrickCardDto;
     let cardNumber;
     let isCardNumberUnique = false;
-
+  
     while (!isCardNumberUnique) {
       cardNumber = Number(CreditCardGenerator.GenCC('VISA')[0]);
-
+  
       const card = await this.saintPatrickCardRepository.findOne({
         where: { card_number: cardNumber },
       });
-
+  
       isCardNumberUnique = !card;
     }
-
+  
     const wallet = await this.walletRepository.findOne({
       where: { id: walletId },
     });
-
+  
     if (!wallet) {
       throw new NotFoundException(`Wallet with ID ${walletId} not found`);
     }
-
+  
+    const pin = Math.floor(Math.random() * 9000) + 1000;
+  
     const saintPatrickCard = this.saintPatrickCardRepository.create({
       ...rest,
       card_number: cardNumber,
+      PIN: pin,
     });
-
+  
     saintPatrickCard.wallet = wallet;
     return await this.saintPatrickCardRepository.save(saintPatrickCard);
   }
+  
   async findOneByUserId(userId: number): Promise<SaintPatrickCard> {
     const saintPatrickCard = await this.saintPatrickCardRepository.findOne({
       where: { wallet: { user: { id: userId } } },
