@@ -1,16 +1,11 @@
-import SaintPatrickCard from 'src/saint-patrick-card/entities/saint-patrick-card.entity';
-import User from 'src/users/entities/user.entity';
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  OneToOne,
-  JoinColumn,
-} from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'typeorm';
+import { SaintPatrickCard } from '../../saint-patrick-card/entities/saint-patrick-card.entity';
+import { User } from '../../users/entities/user.entity';
 
-enum Status {
+enum WalletStatus {
   ACTIVE = 'active',
-  //definir estatus
+  BLOCKED = 'blocked',
+  CANCELED = 'canceled',
 }
 
 @Entity({ name: 'wallet' })
@@ -27,8 +22,8 @@ export class Wallet {
   @Column({ type: 'decimal', precision: 10, scale: 2 })
   amount: number;
 
-  @Column({ type: 'enum', enum: Status, default: Status.ACTIVE })
-  status: Status;
+  @Column({ type: 'enum', enum: WalletStatus, default: WalletStatus.ACTIVE })
+  status: WalletStatus;
 
   @OneToOne(() => SaintPatrickCard, { cascade: true })
   @JoinColumn()
