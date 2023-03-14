@@ -89,7 +89,7 @@ export class UsersService {
     return this.usersRepo.findOne({
       where: { id },
       select: ['id', 'firstname', 'lastname', 'email'],
-      relations: ['wallet', 'cards'],
+      relations: ['wallet', 'card'],
     });
   }
 
