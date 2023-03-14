@@ -8,6 +8,7 @@ import { CORS } from './constants';
 import { ValidationPipe, ClassSerializerInterceptor } from '@nestjs/common';
 import { useContainer } from 'class-validator';
 import { CustomExceptionFilter } from './custom-exception.filter';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const server = express();
@@ -25,8 +26,16 @@ async function bootstrap() {
   );
 
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
+  const config = new DocumentBuilder()
+  .setTitle('Mi API')
+  .setDescription('Descripción de mi API')
+  .setVersion('1.0')
+  .build();
+const document = SwaggerModule.createDocument(app, config);
+SwaggerModule.setup('documentation', app, document);
   app.useGlobalFilters(new CustomExceptionFilter());
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
   await app.listen(process.env.PORT || 4000);
+  
 }
 bootstrap();

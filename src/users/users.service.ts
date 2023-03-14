@@ -5,7 +5,6 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { AppService } from 'src/app.service';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
@@ -16,32 +15,66 @@ import { EXPIRED_TOKEN, SALT } from 'src/constants/contansts';
 import { plainToClass } from 'class-transformer';
 import * as jwt from 'jsonwebtoken';
 import { ConfigService } from '@nestjs/config';
+import { WalletService } from 'src/wallet/wallet.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) private usersRepo: Repository<User>,
-    private readonly configService: ConfigService
+    private readonly configService: ConfigService,
+    private readonly walletService: WalletService,
   ) {}
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
+  async create(
+    createUserDto: CreateUserDto,
+  ): Promise<{ user: User; token: any }> {
     const existingUser = await this.findByEmail(createUserDto.email);
+
     if (existingUser) {
       throw new BadRequestException('Email already registered');
     }
-    createUserDto.password = bcrypt.hashSync(createUserDto.password, SALT);
-    const createdUser = await this.usersRepo.create(createUserDto);
-    return this.usersRepo.save(createdUser);
+
+    const wallet = await this.walletService.createRandomWallet();
+    const hashedPassword = await bcrypt.hashSync(createUserDto.password, SALT);
+    const createdUser = this.usersRepo.create({
+      ...createUserDto,
+      password: hashedPassword,
+      wallet,
+    });
+    const user = await this.usersRepo.save(createdUser);
+    const token = await this.generateToken(user);
+
+    return {
+      user,
+      token,
+    };
   }
-  async login(loginUserDto: LoginUserDto) {
+
+  async login(loginUserDto: LoginUserDto): Promise<{ user: User; token: any }> {
     const { email, password } = loginUserDto;
     const user = await this.findByEmail(email);
 
     if (!user || !bcrypt.compareSync(password, user.password))
       throw new UnauthorizedException();
 
-    const token = this.generateToken(user);
-    return token;
+    const token = await this.generateToken(user);
+    return { user, token };
+  }
+
+  async findOrCreate(
+    body: CreateUserDto,
+  ): Promise<{ user: User; token: string }> {
+    let user = await this.findByEmail(body.email);
+    if (!user) {
+      user = await this.usersRepo.create(body);
+      user.wallet = await this.walletService.createRandomWallet();
+      await this.usersRepo.save(user);
+    }
+    const token = await this.generateToken(user);
+    return {
+      user,
+      token,
+    };
   }
 
   findAll() {
@@ -53,7 +86,11 @@ export class UsersService {
   }
 
   async findOne(id: number) {
-    return this.usersRepo.findOne({ where: { id } });
+    return this.usersRepo.findOne({
+      where: { id },
+      select: ['id', 'firstname', 'lastname', 'email'],
+      relations: ['wallet', 'cards'],
+    });
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
@@ -73,8 +110,8 @@ export class UsersService {
     }
     return this.usersRepo.delete(id);
   }
-  private async generateToken(user: User ){
-    const token = await jwt.sign(
+  private async generateToken(user: User) {
+    const token = jwt.sign(
       {
         id: user.id,
         email: user.email,
@@ -82,7 +119,6 @@ export class UsersService {
       this.configService.get<string>('JWT_SECRET'),
       { expiresIn: EXPIRED_TOKEN },
     );
-
     return token;
   }
 }
