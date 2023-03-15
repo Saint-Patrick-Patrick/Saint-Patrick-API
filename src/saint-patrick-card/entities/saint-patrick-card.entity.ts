@@ -1,35 +1,23 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'typeorm';
 import { Wallet } from '../../wallet/entities/wallet.entity';
-
-export enum Status {
-  ACTIVE = 'active',
-  BLOCKED = 'blocked',
-  CANCELED = 'canceled',
-}
-
+import { Status } from 'src/constants/contansts';
 @Entity({ name: 'SaintPatrickCard' })
 export class SaintPatrickCard {
-  @PrimaryGeneratedColumn()
-  id: number;
+    @PrimaryGeneratedColumn()
+    id: number;
+  
+    @Column({ type: 'integer', unique:true })
+    cardNumber: number;
 
-  @Column({ type: 'numeric', nullable: true })
-  card_number: number;
+    @Column({ type: 'enum', enum: Status, default: Status.ACTIVE })
+    status: Status;
+  
+    @Column({ type: 'varchar', length: 4, unique: true })
+    securityPin?: string;
 
-  @Column({ type: 'enum', enum: Status, default: Status.ACTIVE })
-  status: Status;
+    @OneToOne(() => Wallet, (wallet) => wallet.saintPatrickCard)
+    wallet: Wallet;
 
-  @Column({type: 'numeric',nullable: true })
-  PIN: number;
-
-  @Column({ type: 'date', nullable: true })
-  expiration_date: Date;
-
-  @Column({type: 'numeric',nullable: true })
-  pinPassword: number;
-
-  @OneToOne(() => Wallet, { nullable: false })
-  @JoinColumn()
-  wallet: Wallet;
 }
 
 export default SaintPatrickCard;

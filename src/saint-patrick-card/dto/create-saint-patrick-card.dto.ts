@@ -1,29 +1,20 @@
-import { IsDateString, IsEnum, IsNumber, IsNumberString, IsOptional, IsString, Length, Matches } from 'class-validator';
-import { Status } from '../entities/saint-patrick-card.entity';
+import { IsEnum, IsNumber, IsNotEmpty, Matches } from 'class-validator';
+import { Status } from 'src/constants/contansts';
 
 export class CreateSaintPatrickCardDto {
   @IsNumber()
   walletId: number;
   
-  @IsOptional()
+  @IsNotEmpty()
   @IsNumber()
-  card_number?: number;
+  cardNumber?: number;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsEnum(Status)
   status?: Status;
 
-  @IsOptional()
-  @IsNumber()
-  @Length(3)
-  pin?: number; // <- Cambio de string a number
-
-  @IsOptional()
-  @IsDateString()
-  expiration_date?: Date;
-
-  @IsOptional()
+  @IsNotEmpty()
   @IsNumber()
   @Matches(/^[0-9]{4}$/)
-  pinPassword?: number; // <- Cambio de string a number
+  securityPin?: string; // <- Cambio de string a number
 }

@@ -1,25 +1,15 @@
-import { IsDateString, IsEnum, IsNumber, IsOptional, IsString, Length, Matches } from 'class-validator';
-import { Status } from '../entities/saint-patrick-card.entity';
+import { PartialType } from '@nestjs/mapped-types';
+import { IsNotEmpty, IsNumber, Matches } from 'class-validator';
+import { Wallet } from 'src/wallet/entities/wallet.entity';
+import { CreateSaintPatrickCardDto } from './create-saint-patrick-card.dto';
 
-export class UpdateSaintPatrickCardDto {
-  @IsOptional()
-  @IsNumber()
-  card_number?: number;
+export class UpdateSaintPatrickCardDto extends PartialType(CreateSaintPatrickCardDto) {
 
-  @IsOptional()
-  @IsEnum(Status)
-  status?: Status;
+    @IsNotEmpty()
+    wallet:Wallet
 
-  @IsOptional()
-  @IsNumber()
-  pin?: number;
-
-  @IsOptional()
-  @IsDateString()
-  expiration_date?: Date;
-
-  @IsOptional()
-  @IsString()
-  @Matches(/^[0-9]{4}$/)
-  pinPassword?: number;
+    @IsNotEmpty()
+    @IsNumber()
+    @Matches(/^[0-9]{4}$/)
+    securityPin?: string;
 }

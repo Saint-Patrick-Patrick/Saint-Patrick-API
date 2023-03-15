@@ -1,9 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { 
+  Injectable,
+  NotFoundException,
+
+   } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Card } from './entities/card.entity';
 import { generate } from 'creditcard-generator';
 import User from 'src/users/entities/user.entity';
+import { UpdateCardDto } from './dto/update-card.dto';
+import { plainToClass } from 'class-transformer';
 
 @Injectable()
 export class CardService {
@@ -13,21 +19,10 @@ export class CardService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
   ) {}
-  async create(card: Card, userId: number): Promise<Card> {
-    let generatedCardNumber: string;
-    let existingCard: Card;
-    do {
-      generatedCardNumber = generate({creditCardNumberPrefixes: ['4'], length: 16})[0];
-   
-      existingCard = await this.cardRepository.findOne({
-        where: {
-          numberCard: generatedCardNumber,
-        },
-      });
-    } while (existingCard);
-    card.numberCard = generatedCardNumber;
-    const user = await this.userRepository.findOne({where:{ id: userId }});
-    card.user = user;
+  async create(card: Card, userId: number, ): Promise<Card> {
+
+    const user = await this.userRepository.findOne({relations:{cards:true},where:{ id: userId }});
+    card.users = [...card.users,user];
     return await this.cardRepository.save(card);
   }
   
@@ -40,18 +35,34 @@ export class CardService {
     return card;
   }
 
+  async findOneByCardNumber(cardNumber:number): Promise<Card | undefined>{
+    return await this.cardRepository.findOne({
+      relations:{users:true},
+      where: {cardNumber}
+    });
+  }
+
   async findAll(): Promise<Card[]> {
     return await this.cardRepository.find();
   }
 
-  async findOne(id: string): Promise<Card> {
-    return await this.cardRepository.findOne({where:{id}});
+  async findOne(cardId: number): Promise<Card | undefined> {
+    return await this.cardRepository.findOne({
+      relations:{users:true},
+      where:{id:cardId}
+    });
   }
- 
 
-  async update(id: number, card: Card): Promise<void> {
-    await this.cardRepository.update(id, card);
-  }
+  async update(
+    cardId: number, updateCardDto: UpdateCardDto
+    ) : Promise<Card | undefined>{
+    const card:Card = await this.findOne(cardId);
+    if(!card)
+      throw new NotFoundException('Card not found');
+      Object.assign(card, updateCardDto);
+      const updateCard:Card = await this.cardRepository.save(card);
+      return plainToClass(Card, updateCard) 
+    }
 
   async remove(id: number): Promise<void> {
     await this.cardRepository.delete(id);

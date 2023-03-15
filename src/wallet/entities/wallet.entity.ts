@@ -1,12 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'typeorm';
 import { SaintPatrickCard } from '../../saint-patrick-card/entities/saint-patrick-card.entity';
 import { User } from '../../users/entities/user.entity';
-
-enum WalletStatus {
-  ACTIVE = 'active',
-  BLOCKED = 'blocked',
-  CANCELED = 'canceled',
-}
+import { Status } from 'src/constants/contansts';
 
 @Entity({ name: 'wallet' })
 export class Wallet {
@@ -22,8 +17,8 @@ export class Wallet {
   @Column({ type: 'decimal', precision: 10, scale: 2 })
   amount: number;
 
-  @Column({ type: 'enum', enum: WalletStatus, default: WalletStatus.ACTIVE })
-  status: WalletStatus;
+  @Column({ type: 'enum', enum: Status, default: Status.ACTIVE })
+  status: Status;
 
   @OneToOne(() => SaintPatrickCard, { cascade: true })
   @JoinColumn()
