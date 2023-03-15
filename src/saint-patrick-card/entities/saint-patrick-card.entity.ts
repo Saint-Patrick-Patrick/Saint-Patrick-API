@@ -1,27 +1,23 @@
-import { Wallet } from 'src/wallet/entities/wallet.entity';
-import { Entity, Column, PrimaryGeneratedColumn, OneToOne } from 'typeorm';
-
-
-enum Status{
-    ACTIVE="active"
-   //definir estatus 
-}
-
+import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'typeorm';
+import { Wallet } from '../../wallet/entities/wallet.entity';
+import { Status } from 'src/constants/contansts';
 @Entity({ name: 'SaintPatrickCard' })
 export class SaintPatrickCard {
     @PrimaryGeneratedColumn()
     id: number;
   
-    @Column({ type: 'numeric', nullable:true, unique:true })
-    card_number: number;
+    @Column({ type: 'integer', unique:true })
+    cardNumber: number;
 
     @Column({ type: 'enum', enum: Status, default: Status.ACTIVE })
-    role: Status;
+    status: Status;
   
+    @Column({ type: 'varchar', length: 4, unique: true })
+    securityPin?: string;
+
     @OneToOne(() => Wallet, (wallet) => wallet.saintPatrickCard)
     wallet: Wallet;
+
 }
 
-
-
-export default SaintPatrickCard 
+export default SaintPatrickCard;

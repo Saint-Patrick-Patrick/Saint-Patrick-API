@@ -1,12 +1,6 @@
-import SaintPatrickCard from 'src/saint-patrick-card/entities/saint-patrick-card.entity';
-import User from 'src/users/entities/user.entity';
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  OneToOne,
-  JoinColumn,
-} from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'typeorm';
+import { SaintPatrickCard } from '../../saint-patrick-card/entities/saint-patrick-card.entity';
+import { User } from '../../users/entities/user.entity';
 import { Status } from 'src/constants/contansts';
 
 @Entity({ name: 'wallet' })

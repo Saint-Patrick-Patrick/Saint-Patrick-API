@@ -10,8 +10,8 @@ import { CreateWalletDto } from './dto/create-wallet.dto';
 import { UpdateWalletDto } from './dto/update-wallet.dto';
 import { Wallet } from './entities/wallet.entity';
 import {Chance} from 'chance';
-import { CardsService } from 'src/cards/cards.service';
-import { Card } from 'src/cards/entities/card.entity';
+import { CardService } from 'src/card/card.service';
+import { Card } from 'src/card/entities/card.entity';
 import SaintPatrickCard from 'src/saint-patrick-card/entities/saint-patrick-card.entity';
 import { SaintPatrickCardService } from 'src/saint-patrick-card/saint-patrick-card.service';  
 import { plainToClass } from 'class-transformer';
@@ -23,7 +23,7 @@ const chance = new Chance();
 export class WalletService {
   constructor(
     @InjectRepository(Wallet) private walletRepo: Repository<Wallet>,
-    private readonly cardsService: CardsService,
+    private readonly cardsService: CardService,
     private readonly saintPatrickCardService: SaintPatrickCardService,
   ) {}
 
@@ -171,7 +171,6 @@ export class WalletService {
       if(!cardExternal && !cardSaint) 
         throw new BadRequestException('Unexpected error')
       const wallet = await this.findOne(idWallet);
-      
       if(!wallet)
         throw new NotFoundException('Wallet not found')
 
@@ -179,9 +178,9 @@ export class WalletService {
       const year:number = Number(String(dateOnly.getFullYear).slice(2));
       const month:number = dateOnly.getMonth();
 
-      const dateCardExpires = cardExternal.Expiration_date.split('/')[0];
-      const cardExpiredMonth = Number(dateCardExpires[0]);
-      const cardExpiredYear = Number(dateCardExpires[1]);
+      const dateCardExpires:string = cardExternal.expirationDate.split('/')[0];
+      const cardExpiredMonth:number = Number(dateCardExpires[0]);
+      const cardExpiredYear:number = Number(dateCardExpires[1]);
 
       if(cardExternal){
         if( cardExpiredMonth < month && cardExpiredYear < year) 
@@ -197,14 +196,14 @@ export class WalletService {
         return await this.calculateAddFounds(amount, wallet, null, cardSaint);
       }
     }
-    private calculateAddFounds(
+    private async calculateAddFounds(
       amount: number, wallet: Wallet, card: Card | undefined, cardSaint:SaintPatrickCard | undefined
       ) : Promise<Wallet | undefined>{
         const updateWalletDto:UpdateWalletDto = {...wallet, amount: wallet.amount + amount};
         const newAmountCard:number = card? card.amount - amount : cardSaint.wallet.amount - amount;
         card?
-          this.cardsService.update(card.id, {...card, amount:newAmountCard}):
-          this.update(cardSaint.wallet.id, {...cardSaint.wallet,amount:newAmountCard})
-        return this.update(wallet.id, updateWalletDto);
+          await this.cardsService.update(card.id, {...card,amount:newAmountCard}):
+          await this.update(cardSaint.wallet.id, {...cardSaint.wallet,amount:newAmountCard})
+        return await this.update(wallet.id, updateWalletDto);
     }
 }

@@ -1,7 +1,7 @@
-import { Controller, Get, Redirect, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Redirect, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags } from '@nestjs/swagger';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import httpStatus from 'http-status';
 import { UsersService } from 'src/users/users.service';
 
@@ -20,8 +20,9 @@ export class AuthController {
  }
  @Get('google/callback')
  @UseGuards(AuthGuard('google'))
- async googleLoginRedirect(@Req() req:Request & { user?: any }):Promise<any>{
-   return await this.userService.findOrCreate(req.user);
+ async googleLoginRedirect(@Req() req:Request & { user?: any },@Res() res:Response):Promise<any>{
+   const {user, token} = await this.userService.findOrCreate(req.user);
+   return res.redirect(`${process.env.URL_FRONT}/login?token=${token}`)
  }
 
  @Get('facebook')
@@ -31,7 +32,9 @@ export class AuthController {
  }
  @Get('facebook/callback')
  @UseGuards(AuthGuard('facebook'))
- async facebookLoginRedirect(@Req() req:Request & { user?: any }):Promise<any>{   
-     return await this.userService.findOrCreate(req.user);
+ async facebookLoginRedirect(@Req() req:Request & { user?: any },@Res() res:Response):Promise<any>{   
+   const {user, token} = await this.userService.findOrCreate(req.user);
+   return res.redirect(`${process.env.URL_FRONT}/login?token=${token}`)
+
  }
 }

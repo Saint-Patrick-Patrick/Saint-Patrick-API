@@ -10,8 +10,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { WalletService } from 'src/wallet/wallet.service';
 import { Wallet } from 'src/wallet/entities/wallet.entity';
-import { CardsService } from 'src/cards/cards.service';
-import { Card } from 'src/cards/entities/card.entity';
+import { CardService } from 'src/card/card.service';
+import { Card } from 'src/card/entities/card.entity';
 import { SaintPatrickCardService } from 'src/saint-patrick-card/saint-patrick-card.service';
 import SaintPatrickCard from 'src/saint-patrick-card/entities/saint-patrick-card.entity';
 
@@ -24,7 +24,7 @@ import SaintPatrickCard from 'src/saint-patrick-card/entities/saint-patrick-card
     UsersService,
     ConfigService,
     WalletService,
-    CardsService,
+    CardService,
     SaintPatrickCardService
   ],
   controllers: [AuthController],
