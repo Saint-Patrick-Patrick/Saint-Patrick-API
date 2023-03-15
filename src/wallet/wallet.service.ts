@@ -1,7 +1,8 @@
 import {
   BadRequestException,
   Injectable,
-
+  NotFoundException,
+  HttpException
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -13,7 +14,6 @@ import { CardsService } from 'src/cards/cards.service';
 import { Card } from 'src/cards/entities/card.entity';
 import SaintPatrickCard from 'src/saint-patrick-card/entities/saint-patrick-card.entity';
 import { SaintPatrickCardService } from 'src/saint-patrick-card/saint-patrick-card.service';  
-import { MethodNotAllowedException, NotFoundException } from '@nestjs/common/exceptions';
 import { plainToClass } from 'class-transformer';
 
 
@@ -135,7 +135,7 @@ export class WalletService {
     return 'This action adds a new wallet';
   }
 
-  findAll(): Promise< Wallet[] | []> {
+  findAll(): Promise< Wallet[] | null | []> {
     return this.walletRepo.find({
       relations:{user:true,saintPatrickCard:true}
     });
@@ -171,24 +171,32 @@ export class WalletService {
       if(!cardExternal && !cardSaint) 
         throw new BadRequestException('Unexpected error')
       const wallet = await this.findOne(idWallet);
-        if(!wallet)
-          throw new NotFoundException('Wallet not found')
+      
+      if(!wallet)
+        throw new NotFoundException('Wallet not found')
+
+      const dateOnly: Date = new Date();
+      const year:number = Number(String(dateOnly.getFullYear).slice(2));
+      const month:number = dateOnly.getMonth();
+
+      const dateCardExpires = cardExternal.Expiration_date.split('/')[0];
+      const cardExpiredMonth = Number(dateCardExpires[0]);
+      const cardExpiredYear = Number(dateCardExpires[1]);
+
       if(cardExternal){
-        //AQUI TENGO QUE VERIFICAR QUE LA FECHA ACTUAL SEA LA MISMA O INFERIOR ALA DE LA CARD
-        const dateOnly = Date.now();
-        if(cardExternal.Expiration_date)
+        if( cardExpiredMonth < month && cardExpiredYear < year) 
+          throw new HttpException('Expired Card', 402);
         if(cardExternal.amount < amount)
-          throw new NotFoundException('Card without funds');
+          throw new HttpException('Card without funds', 402);
         return await this.calculateAddFounds(amount, wallet, cardExternal, null);
       }else{
         if(cardSaint.wallet.cvu === wallet.cvu)
           throw new BadRequestException('Ups unexpected error');
         if(cardSaint.wallet.amount < amount)
-          throw new NotFoundException('Card without funds');
+        throw new HttpException('Card without funds', 402);
         return await this.calculateAddFounds(amount, wallet, null, cardSaint);
       }
     }
-    
     private calculateAddFounds(
       amount: number, wallet: Wallet, card: Card | undefined, cardSaint:SaintPatrickCard | undefined
       ) : Promise<Wallet | undefined>{

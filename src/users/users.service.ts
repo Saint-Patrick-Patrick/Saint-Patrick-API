@@ -77,8 +77,10 @@ export class UsersService {
     };
   }
 
-  findAll() {
-    return this.usersRepo.find();
+  async findAll(): Promise<User[]>{
+    return await this.usersRepo.find({
+      relations:{cards:true, wallet:true, picture:true}
+    });
   }
 
   async findByEmail(email: string): Promise<User | undefined> {
@@ -89,7 +91,7 @@ export class UsersService {
     return this.usersRepo.findOne({
       where: { id },
       select: ['id', 'firstname', 'lastname', 'email'],
-      relations: ['wallet', 'cards'],
+      relations: ['wallet', 'cards', 'picture'],
     });
   }
 
