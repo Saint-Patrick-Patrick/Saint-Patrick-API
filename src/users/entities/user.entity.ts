@@ -23,7 +23,6 @@ export class User {
   password: string;
 
   @ManyToMany(() => Card, card => card.users)
-  @JoinTable()
   cards: Card[];
 
   @OneToOne(() => Picture, { cascade: true })

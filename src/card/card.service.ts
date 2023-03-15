@@ -13,19 +13,8 @@ export class CardService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
   ) {}
-  async create(card: Card, userId: number): Promise<Card> {
-    let generatedCardNumber: string;
-    let existingCard: Card;
-    do {
-      generatedCardNumber = generate({creditCardNumberPrefixes: ['4'], length: 16})[0];
-   
-      existingCard = await this.cardRepository.findOne({
-        where: {
-          numberCard: generatedCardNumber,
-        },
-      });
-    } while (existingCard);
-    card.numberCard = generatedCardNumber;
+  async create(card: Card, userId: number, ): Promise<Card> {
+
     const user = await this.userRepository.findOne({relations:{cards:true},where:{ id: userId }});
     card.users = [...card.users,user];
     return await this.cardRepository.save(card);

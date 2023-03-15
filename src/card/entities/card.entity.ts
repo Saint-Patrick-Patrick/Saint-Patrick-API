@@ -16,7 +16,6 @@ export class Card {
   securityPin?: string;
 
   @ManyToMany(() => User, user => user.cards)
-  @JoinTable()
   users: User[];
 }
 
