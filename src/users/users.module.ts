@@ -11,7 +11,7 @@ import { Wallet } from 'src/wallet/entities/wallet.entity';
 import { Card } from 'src/card/entities/card.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Transactions, Card, Picture,Wallet])],
+  imports: [TypeOrmModule.forFeature([User, Card, Picture, Wallet])],
   controllers: [UsersController],
   providers: [UsersService, AuthMiddleware, WalletService],
 })
