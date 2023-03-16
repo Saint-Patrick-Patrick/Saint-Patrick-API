@@ -22,6 +22,11 @@ export class SaintPatrickCardController {
     return this.saintPatrickCardService.findOne(+id);
   }
 
+  @Get('/user/:userId')
+  findOneByUserId(@Param('userId') userId: string) {
+    return this.saintPatrickCardService.findOneByUserId(+userId);
+  }
+
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateSaintPatrickCardDto: UpdateSaintPatrickCardDto) {
     return this.saintPatrickCardService.update(+id, updateSaintPatrickCardDto);
@@ -32,3 +37,4 @@ export class SaintPatrickCardController {
     return this.saintPatrickCardService.remove(+id);
   }
 }
+

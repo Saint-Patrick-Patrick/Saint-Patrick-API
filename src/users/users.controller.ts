@@ -23,7 +23,8 @@ export class UsersController {
 
   @Post('register')
   async register(
-    @Body() createUserDTO: CreateUserDto,
+    @Body() 
+    createUserDTO: CreateUserDto,
   ): Promise<{ user: User; token: any }> {
     return this.usersService.create(createUserDTO);
   }
@@ -34,8 +35,8 @@ export class UsersController {
   }
 
   @Get()
-  findAll() {
-    return this.usersService.findAll();
+  async findAll() : Promise<User[] | []> {
+    return await this.usersService.findAll();
   }
 
   @Get('auth')

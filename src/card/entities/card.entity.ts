@@ -1,22 +1,38 @@
 import { User } from 'src/users/entities/user.entity';
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToOne } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinTable } from 'typeorm';
+import { Status } from 'src/constants/contansts';
 
 @Entity({ name: 'card' })
 export class Card {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-  @Column({ type: 'varchar', length: 16, nullable: true })
-  numberCard?: string;
+  @Column({ type: 'integer'})
+  cardNumber: number;
 
-  @Column({ type: 'varchar', length: 3, nullable: true })
-  securityCode?: string;
+  @Column({type:'varchar'})
+  cardHolderName:string
 
-  @Column({ type: 'varchar', length: 4, unique: true, nullable: true })
+  @Column({ type: 'integer' })
+  cardVerificationCode: number;
+ 
+  @Column({type: 'decimal', precision: 10, scale: 2})
+  amount:number;
+
+  @Column({type:'varchar',length:5})
+  expirationDate:string;
+
+  @Column({type:'varchar', length:12})
+  ID: string;
+
+  @Column({ type: 'varchar', length: 4 })
   securityPin?: string;
 
-  @OneToOne(() => User, user => user.card)
-  user: User;
+  @ManyToMany(() => User, user => user.cards)
+  users: User[];
+
+  @Column({ type: 'enum', enum: Status, default: Status.ACTIVE })
+  status: Status;
 }
 
 
