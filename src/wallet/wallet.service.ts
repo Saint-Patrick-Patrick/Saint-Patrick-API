@@ -147,6 +147,14 @@ export class WalletService {
       where:{id}
     });
   }
+  async findOneByUserId(id: string) : Promise<Wallet | undefined> {
+    const wallet = await this.walletRepo.findOne({
+      where: { user: { id: Number(id) } },
+      relations: ['user'],
+    });
+  
+    return wallet;
+  }
 
   async update(
     id: number, updateWalletDto: UpdateWalletDto

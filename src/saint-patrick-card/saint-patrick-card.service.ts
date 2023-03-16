@@ -1,6 +1,7 @@
 import { 
   Injectable, 
-  NotFoundException, 
+  NotFoundException,
+   BadRequestException,
   HttpException 
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -12,34 +13,37 @@ import { UpdateSaintPatrickCardDto } from './dto/update-saint-patrick-card.dto';
 import SaintPatrickCard from './entities/saint-patrick-card.entity';
 import CreditCardGenerator from 'creditcard-generator';
 import httpStatus from 'http-status';
+import { WalletService } from 'src/wallet/wallet.service';
 
 @Injectable()
 export class SaintPatrickCardService {
   constructor(
     @InjectRepository(SaintPatrickCard)
     private readonly saintPatrickCardRepository: Repository<SaintPatrickCard>,
-    @InjectRepository(Wallet)
-    private readonly walletRepository: Repository<Wallet>,
+    private readonly walletService: WalletService,
+ 
   ) {}
 
   async create(
-    createSaintPatrickCardDto: CreateSaintPatrickCardDto,
+    id: string,
   ): Promise<SaintPatrickCard> {
-    const { walletId } = createSaintPatrickCardDto;
 
-    const cardNumber:number = await this.CreateNumberCard();
+    const wallet : Wallet | undefined = await this.walletService.findOneByUserId(id);
+    if (!wallet) 
+      throw new NotFoundException(`Wallet with ID ${id} not found`);
+    
 
-    const wallet: Wallet = await this.walletRepository.findOne({
-      where: { id: walletId },
+    const existingSaintPatrickCard : SaintPatrickCard | undefined = await this.saintPatrickCardRepository.findOne({
+      where: { wallet: { id: wallet.id } },
+      relations: ['wallet'],
     });
+
+    if(existingSaintPatrickCard) throw new BadRequestException('Saint Patrick Existing');
+    
+    const cardNumber:number = await this.CreateNumberCard();
   
-    if (!wallet) {
-      throw new NotFoundException(`Wallet with ID ${walletId} not found`);
-    }
-  
-    const saintPatrickCard = this.saintPatrickCardRepository.create({
-      ...createSaintPatrickCardDto,
-      cardNumber: cardNumber,
+    const saintPatrickCard : SaintPatrickCard = this.saintPatrickCardRepository.create({
+      cardNumber,
       wallet
     });
     return await this.saintPatrickCardRepository.save(saintPatrickCard);
