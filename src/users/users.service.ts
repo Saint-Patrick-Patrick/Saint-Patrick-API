@@ -77,10 +77,12 @@ export class UsersService {
     };
   }
 
-  async findAll(): Promise<User[]>{
-    return await this.usersRepo.find({
-      relations:{cards:true, wallet:true, picture:true}
-    });
+  async findAll(): Promise<User[]> {
+    return await this.usersRepo
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.wallet', 'wallet')
+      .innerJoinAndSelect('wallet.saintPatrickCard', 'saintPatrickCard')
+      .getMany();
   }
 
   async findByEmail(email: string): Promise<User | undefined> {
@@ -88,11 +90,12 @@ export class UsersService {
   }
 
   async findOne(id: number) {
-    const user = await this.usersRepo.findOne({
-      where: { id },
-      select: ['id', 'firstname', 'lastname', 'email'],
-      relations: ['wallet', 'cards', 'picture'],
-    });
+    const user = await this.usersRepo
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.wallet', 'wallet')
+      .innerJoinAndSelect('wallet.saintPatrickCard', 'saintPatrickCard')
+      .where('user.id = :id', { id })
+      .getOne();
 
     if (!user) throw new NotFoundException(`User with ID ${id} not found`);
 

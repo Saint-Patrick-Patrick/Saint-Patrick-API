@@ -12,17 +12,17 @@ export class SaintPatrickCard {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'integer', unique: true })
-  cardNumber: number;
+  @Column({ type: 'varchar', unique: true })
+  cardNumber: string;
 
-  @Column({ type: 'varchar', length: 5 })
-  expirationDate: string;
+  // @Column({ type: 'varchar', length: 5 })
+  // expirationDate: string;
 
   @Column({ type: 'enum', enum: Status, default: Status.ACTIVE })
   status: Status;
 
-  @Column({ type: 'varchar', length: 4, unique: true })
-  securityPin?: string;
+  // @Column({ type: 'varchar', length: 4, unique: true })
+  // securityPin?: string;
 
   @OneToOne(() => Wallet, (wallet) => wallet.saintPatrickCard)
   wallet: Wallet;

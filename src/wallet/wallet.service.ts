@@ -147,15 +147,7 @@ export class WalletService {
       where:{id}
     });
   }
-  async findOneByUserId(id: string) : Promise<Wallet | undefined> {
-    const wallet = await this.walletRepo.findOne({
-      where: { user: { id: Number(id) } },
-      relations: ['user'],
-    });
-  
-    return wallet;
-  }
-
+ 
   async update(
     id: number, updateWalletDto: UpdateWalletDto
     ): Promise<Wallet> {
@@ -172,7 +164,7 @@ export class WalletService {
   }
 
   async addFunds(
-    amount:number, card_number:number , idWallet: number
+    amount:number, card_number:string , idWallet: number
     ){
       const cardExternal: Card | undefined = await this.cardsService.findOneByCardNumber(card_number);
       const cardSaint: SaintPatrickCard | undefined = await this.saintPatrickCardService.findOneByCardNumber(card_number);

@@ -10,12 +10,11 @@ import { Card } from 'src/card/entities/card.entity';
 import User from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { AuthMiddleware } from 'src/core/middleware/auth.middleware';
-import { UsersModule } from 'src/users/users.module';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Wallet, SaintPatrickCard, Card, User]),],
   controllers: [SaintPatrickCardController],
-  providers: [SaintPatrickCardService,AuthMiddleware , CardService, WalletService, UsersService,UsersModule]
+  providers: [SaintPatrickCardService,AuthMiddleware , CardService, WalletService, UsersService]
 })
 export class SaintPatrickCardModule {
   configure(consumer: MiddlewareConsumer) {

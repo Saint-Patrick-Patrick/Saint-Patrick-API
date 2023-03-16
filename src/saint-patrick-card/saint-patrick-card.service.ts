@@ -11,16 +11,16 @@ import { Repository } from 'typeorm';
 import { CreateSaintPatrickCardDto } from './dto/create-saint-patrick-card.dto';
 import { UpdateSaintPatrickCardDto } from './dto/update-saint-patrick-card.dto';
 import SaintPatrickCard from './entities/saint-patrick-card.entity';
-import CreditCardGenerator from 'creditcard-generator';
+import * as CreditCardGenerator from 'creditcard-generator';
 import httpStatus from 'http-status';
-import { WalletService } from 'src/wallet/wallet.service';
 
 @Injectable()
 export class SaintPatrickCardService {
   constructor(
     @InjectRepository(SaintPatrickCard)
     private readonly saintPatrickCardRepository: Repository<SaintPatrickCard>,
-    private readonly walletService: WalletService,
+    @InjectRepository(Wallet)
+    private readonly walletRepository: Repository<Wallet>,
  
   ) {}
 
@@ -28,7 +28,12 @@ export class SaintPatrickCardService {
     id: string,
   ): Promise<SaintPatrickCard> {
 
-    const wallet : Wallet | undefined = await this.walletService.findOneByUserId(id);
+    const wallet : Wallet | undefined = await this.walletRepository.findOne({
+      where: { user:{id:Number(id)} },
+      relations:['user', 'saintPatrickCard']
+    });
+    console.log(wallet);
+    
     if (!wallet) 
       throw new NotFoundException(`Wallet with ID ${id} not found`);
     
@@ -40,7 +45,7 @@ export class SaintPatrickCardService {
 
     if(existingSaintPatrickCard) throw new BadRequestException('Saint Patrick Existing');
     
-    const cardNumber:number = await this.CreateNumberCard();
+    const cardNumber:string = await this.CreateNumberCard();
   
     const saintPatrickCard : SaintPatrickCard = this.saintPatrickCardRepository.create({
       cardNumber,
@@ -49,7 +54,7 @@ export class SaintPatrickCardService {
     return await this.saintPatrickCardRepository.save(saintPatrickCard);
   }
   
-  private async CreateNumberCard(): Promise<number>{
+  private async CreateNumberCard(): Promise<string>{
     let cardNumber:number;
     let isCardNumberUnique:boolean = false;
     let generateCardNumber:string;
@@ -57,10 +62,10 @@ export class SaintPatrickCardService {
     while (!isCardNumberUnique) {
       generateCardNumber = CreditCardGenerator.GenCC('VISA')[0];
       cardNumber = Number( '7777'+ generateCardNumber.slice(4));
-      const card: SaintPatrickCard | undefined = await this.findOneByCardNumber(cardNumber);
+      const card: SaintPatrickCard | undefined = await this.findOneByCardNumber(cardNumber.toString());
       isCardNumberUnique = !card;
     }
-    return cardNumber;
+    return cardNumber.toString();
   };
 
   async findOneByUserId(userId: number): Promise<SaintPatrickCard> {
@@ -77,7 +82,7 @@ export class SaintPatrickCardService {
     return await this.saintPatrickCardRepository.find();
   }
 
-  async findOneByCardNumber(cardNumber:number): 
+  async findOneByCardNumber(cardNumber:string): 
     Promise<SaintPatrickCard | undefined>{
       return await this.saintPatrickCardRepository.findOne({
         relations:{wallet:true},
