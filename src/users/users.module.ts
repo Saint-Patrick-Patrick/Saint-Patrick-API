@@ -8,12 +8,15 @@ import Transactions from 'src/transactions/entities/transactions.entity';
 import Picture from 'src/picture/entities/picture.entity';
 import { WalletService } from 'src/wallet/wallet.service';
 import { Wallet } from 'src/wallet/entities/wallet.entity';
+import { CardService } from 'src/card/card.service';
+import SaintPatrickCard from 'src/saint-patrick-card/entities/saint-patrick-card.entity';
+import { SaintPatrickCardService } from 'src/saint-patrick-card/saint-patrick-card.service';
 import { Card } from 'src/card/entities/card.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Card, Picture, Wallet])],
+  imports: [TypeOrmModule.forFeature([User, Transactions, Card, Picture, Wallet, SaintPatrickCard])],
   controllers: [UsersController],
-  providers: [UsersService, AuthMiddleware, WalletService],
+  providers: [UsersService, AuthMiddleware, WalletService, CardService, SaintPatrickCardService],
 })
 export class UsersModule {
   configure(consumer: MiddlewareConsumer) {

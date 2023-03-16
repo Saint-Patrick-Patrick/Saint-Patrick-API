@@ -4,17 +4,11 @@ export class CreateTransactionsDto {
 
   @IsString()
   @IsNotEmpty()
-  fromCBU: string;
+  from: string;
 
   @IsString()
   @IsNotEmpty()
-  for: string;
-  
-  @IsString()
-  toCVUOrAlias: string;
-
-  @IsNumber()
-  toCardCBU:number;
+  to: string;
 
   @IsNotEmpty()
   @IsNumber()

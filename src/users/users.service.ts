@@ -21,8 +21,8 @@ import { WalletService } from 'src/wallet/wallet.service';
 export class UsersService {
   constructor(
     @InjectRepository(User) private usersRepo: Repository<User>,
-    private readonly configService: ConfigService,
     private readonly walletService: WalletService,
+    private readonly configService: ConfigService,
   ) {}
 
   async create(
@@ -77,8 +77,10 @@ export class UsersService {
     };
   }
 
-  findAll() {
-    return this.usersRepo.find();
+  async findAll(): Promise<User[]>{
+    return await this.usersRepo.find({
+      relations:{cards:true, wallet:true, picture:true}
+    });
   }
 
   async findByEmail(email: string): Promise<User | undefined> {
@@ -89,7 +91,7 @@ export class UsersService {
     const user = await this.usersRepo.findOne({
       where: { id },
       select: ['id', 'firstname', 'lastname', 'email'],
-      relations: ['wallet', 'card'],
+      relations: ['wallet', 'cards', 'picture'],
     });
 
     if (!user) throw new NotFoundException(`User with ID ${id} not found`);

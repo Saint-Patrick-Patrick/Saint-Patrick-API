@@ -1,11 +1,17 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { 
+  Injectable, 
+  NotFoundException, 
+  HttpException 
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { plainToClass } from 'class-transformer';
+import { Wallet } from 'src/wallet/entities/wallet.entity';
 import { Repository } from 'typeorm';
-import CreditCardGenerator from 'creditcard-generator';
 import { CreateSaintPatrickCardDto } from './dto/create-saint-patrick-card.dto';
 import { UpdateSaintPatrickCardDto } from './dto/update-saint-patrick-card.dto';
-import { SaintPatrickCard } from './entities/saint-patrick-card.entity';
-import { Wallet } from '../wallet/entities/wallet.entity';
+import SaintPatrickCard from './entities/saint-patrick-card.entity';
+import CreditCardGenerator from 'creditcard-generator';
+import httpStatus from 'http-status';
 
 @Injectable()
 export class SaintPatrickCardService {
@@ -19,21 +25,11 @@ export class SaintPatrickCardService {
   async create(
     createSaintPatrickCardDto: CreateSaintPatrickCardDto,
   ): Promise<SaintPatrickCard> {
-    const { walletId, ...rest } = createSaintPatrickCardDto;
-    let cardNumber;
-    let isCardNumberUnique = false;
-  
-    while (!isCardNumberUnique) {
-      cardNumber = Number(CreditCardGenerator.GenCC('VISA')[0]);
-  
-      const card = await this.saintPatrickCardRepository.findOne({
-        where: { card_number: cardNumber },
-      });
-  
-      isCardNumberUnique = !card;
-    }
-  
-    const wallet = await this.walletRepository.findOne({
+    const { walletId } = createSaintPatrickCardDto;
+
+    const cardNumber:number = await this.CreateNumberCard();
+
+    const wallet: Wallet = await this.walletRepository.findOne({
       where: { id: walletId },
     });
   
@@ -41,20 +37,30 @@ export class SaintPatrickCardService {
       throw new NotFoundException(`Wallet with ID ${walletId} not found`);
     }
   
-    const pin = Math.floor(Math.random() * 9000) + 1000;
-  
     const saintPatrickCard = this.saintPatrickCardRepository.create({
-      ...rest,
-      card_number: cardNumber,
-      PIN: pin,
+      ...createSaintPatrickCardDto,
+      cardNumber: cardNumber,
+      wallet
     });
-  
-    saintPatrickCard.wallet = wallet;
     return await this.saintPatrickCardRepository.save(saintPatrickCard);
   }
   
+  private async CreateNumberCard(): Promise<number>{
+    let cardNumber:number;
+    let isCardNumberUnique:boolean = false;
+    let generateCardNumber:string;
+
+    while (!isCardNumberUnique) {
+      generateCardNumber = CreditCardGenerator.GenCC('VISA')[0];
+      cardNumber = Number( '7777'+ generateCardNumber.slice(4));
+      const card: SaintPatrickCard | undefined = await this.findOneByCardNumber(cardNumber);
+      isCardNumberUnique = !card;
+    }
+    return cardNumber;
+  };
+
   async findOneByUserId(userId: number): Promise<SaintPatrickCard> {
-    const saintPatrickCard = await this.saintPatrickCardRepository.findOne({
+    const saintPatrickCard : SaintPatrickCard | undefined = await this.saintPatrickCardRepository.findOne({
       where: { wallet: { user: { id: userId } } },
     });
     if (!saintPatrickCard) {
@@ -67,10 +73,29 @@ export class SaintPatrickCardService {
     return await this.saintPatrickCardRepository.find();
   }
 
+  async findOneByCardNumber(cardNumber:number): 
+    Promise<SaintPatrickCard | undefined>{
+      return await this.saintPatrickCardRepository.findOne({
+        relations:{wallet:true},
+        where:{cardNumber}
+      });
+  }
+
+  async update(
+    id: number, updateSaintPatrickCardDto: UpdateSaintPatrickCardDto
+    ): Promise<SaintPatrickCard | undefined> {
+      const saintPatrickCard:SaintPatrickCard = await this.findOne(id)
+      if(!saintPatrickCard) 
+        throw new NotFoundException('wallet not found')
+      Object.assign(saintPatrickCard, updateSaintPatrickCardDto)
+      const updatedSaint = await this.saintPatrickCardRepository.save(saintPatrickCard);
+      return plainToClass(SaintPatrickCard, updatedSaint);
+    }
+
   async findOne(id: number): Promise<SaintPatrickCard> {
     const saintPatrickCard = await this.saintPatrickCardRepository.findOne({
-      where: { id },
-      relations: ['wallet'],
+      relations:{wallet:true},
+      where:{id}
     });
     if (!saintPatrickCard) {
       throw new NotFoundException(`SaintPatrickCard with ID ${id} not found`);
@@ -78,26 +103,11 @@ export class SaintPatrickCardService {
     return saintPatrickCard;
   }
 
-  async update(
-    id: number,
-    updateSaintPatrickCardDto: UpdateSaintPatrickCardDto,
-  ): Promise<SaintPatrickCard> {
+  async remove(id: number): Promise<string | undefined> {
     const saintPatrickCard = await this.findOne(id);
-    const updatedFields = {};
-
-    for (const [key, value] of Object.entries(updateSaintPatrickCardDto)) {
-      // Si la propiedad existe en la entidad, añadirla al objeto de campos actualizados
-      if (key in saintPatrickCard) {
-        updatedFields[key] = value;
-      }
-    }
-    // Actualizar la entidad con los campos actualizados y guardarla en la base de datos
-    this.saintPatrickCardRepository.merge(saintPatrickCard, updatedFields);
-    return await this.saintPatrickCardRepository.save(saintPatrickCard);
-  }
-
-  async remove(id: number): Promise<void> {
-    const saintPatrickCard = await this.findOne(id);
+    if(!saintPatrickCard)
+      throw new NotFoundException('Saint Patrick Card not found')
     await this.saintPatrickCardRepository.remove(saintPatrickCard);
+    return 'Card Saint Patrick deleted succesfully';
   }
 }
