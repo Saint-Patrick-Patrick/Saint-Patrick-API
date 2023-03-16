@@ -16,7 +16,6 @@ import { Wallet } from './wallet/entities/wallet.entity';
 import { Card } from './card/entities/card.entity';
 import { CardModule } from './card/card.module';
 import { SaintPatrickCard } from './saint-patrick-card/entities/saint-patrick-card.entity';
-import { TestModule } from './test/test.module';
 
 
 @Module({
@@ -47,7 +46,6 @@ import { TestModule } from './test/test.module';
     PictureModule,
     CardModule,
     SaintPatrickCardModule,
-    TestModule
     // aca van todos los modulos
     ],
   controllers: [AppController],
