@@ -79,7 +79,7 @@ export class UsersService {
 
   async findAll(): Promise<User[]>{
     return await this.usersRepo.find({
-      relations:{cards:true, wallet:true, picture:true}
+      relations: ['wallet'],
     });
   }
 
@@ -90,10 +90,10 @@ export class UsersService {
   async findOne(id: number) {
     const user = await this.usersRepo.findOne({
       where: { id },
-      select: ['id', 'firstname', 'lastname', 'email'],
-      relations: ['wallet', 'cards', 'picture'],
+      select: ['id', 'firstname', 'lastname' ,'email'],
+      relations: ['wallet'],
     });
-
+    
     if (!user) throw new NotFoundException(`User with ID ${id} not found`);
 
     return user;
