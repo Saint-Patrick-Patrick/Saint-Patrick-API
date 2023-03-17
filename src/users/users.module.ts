@@ -2,6 +2,7 @@ import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import User from './entities/user.entity';
+import Notification from 'src/notifications/entities/notification.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthMiddleware } from '../core/middleware/auth.middleware';
 import Transactions from 'src/transactions/entities/transactions.entity';
@@ -13,6 +14,7 @@ import SaintPatrickCard from 'src/saint-patrick-card/entities/saint-patrick-card
 import { SaintPatrickCardService } from 'src/saint-patrick-card/saint-patrick-card.service';
 import { Card } from 'src/card/entities/card.entity';
 import { SaintPatrickCardModule } from 'src/saint-patrick-card/saint-patrick-card.module';
+import { NotificationsService } from 'src/notifications/notifications.service';
 
 @Module({
   imports: [
@@ -22,6 +24,7 @@ import { SaintPatrickCardModule } from 'src/saint-patrick-card/saint-patrick-car
       Card,
       Picture,
       Wallet,
+      Notification,
       SaintPatrickCard,
     ]),
     SaintPatrickCardModule
@@ -33,6 +36,7 @@ import { SaintPatrickCardModule } from 'src/saint-patrick-card/saint-patrick-car
     WalletService,
     CardService,
     SaintPatrickCardService,
+    NotificationsService
   ],
 })
 export class UsersModule {
