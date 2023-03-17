@@ -1,6 +1,5 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { SaintPatrickCardService } from './saint-patrick-card.service';
-import { CreateSaintPatrickCardDto } from './dto/create-saint-patrick-card.dto';
 import { UpdateSaintPatrickCardDto } from './dto/update-saint-patrick-card.dto';
 import { Req } from '@nestjs/common/decorators';
 import SaintPatrickCard from './entities/saint-patrick-card.entity';
