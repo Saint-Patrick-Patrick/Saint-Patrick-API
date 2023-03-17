@@ -29,6 +29,7 @@ export class Card {
   securityPin?: string;
 
   @ManyToMany(() => User, user => user.cards)
+  @JoinTable()
   users: User[];
 
   @Column({ type: 'enum', enum: Status, default: Status.ACTIVE })

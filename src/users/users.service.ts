@@ -79,10 +79,11 @@ export class UsersService {
 
   async findAll(): Promise<User[]> {
     return await this.usersRepo
-      .createQueryBuilder('user')
-      .leftJoinAndSelect('user.wallet', 'wallet')
-      .innerJoinAndSelect('wallet.saintPatrickCard', 'saintPatrickCard')
-      .getMany();
+    .createQueryBuilder('user')
+    .leftJoinAndSelect('user.wallet', 'wallet')
+    .leftJoinAndSelect('user.picture', 'picture')
+    .leftJoinAndSelect('user.cards', 'cards')
+    .getMany();
 
   }
 

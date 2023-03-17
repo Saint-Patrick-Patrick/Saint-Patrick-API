@@ -5,7 +5,7 @@ import { Wallet } from 'src/wallet/entities/wallet.entity';
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany, OneToOne, JoinColumn, ManyToMany, JoinTable } from 'typeorm';
 import { Status } from 'src/constants/contansts';
 
-@Entity({ name: 'users' })
+@Entity({ name: 'user' })
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
@@ -23,6 +23,7 @@ export class User {
   password: string;
 
   @ManyToMany(() => Card, card => card.users)
+  @JoinColumn()
   cards: Card[];
 
   @OneToOne(() => Picture, { cascade: true })
