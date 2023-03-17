@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module,forwardRef } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -20,6 +20,8 @@ import { SaintPatrickCard } from './saint-patrick-card/entities/saint-patrick-ca
 
 @Module({
   imports: [
+    forwardRef(() => SaintPatrickCardModule), // Aplicando forwardRef() aquí
+    forwardRef(() => UsersModule), // Aplicando forwardRef() aquí
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({

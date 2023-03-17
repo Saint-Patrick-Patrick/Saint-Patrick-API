@@ -7,8 +7,8 @@ export class Card {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'integer'})
-  cardNumber: number;
+  @Column({ type: 'varchar'})
+  cardNumber: string;
 
   @Column({type:'varchar'})
   cardHolderName:string

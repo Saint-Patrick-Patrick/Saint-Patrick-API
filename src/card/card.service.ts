@@ -35,7 +35,7 @@ export class CardService {
     return card;
   }
 
-  async findOneByCardNumber(cardNumber:number): Promise<Card | undefined>{
+  async findOneByCardNumber(cardNumber:string): Promise<Card | undefined>{
     return await this.cardRepository.findOne({
       relations:{users:true},
       where: {cardNumber}
