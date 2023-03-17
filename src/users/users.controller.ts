@@ -42,6 +42,7 @@ export class UsersController {
   @Get('auth')
   async authUser(@Req() req: Request & { user: any }): Promise<User> {
     const { id } = req.user;
+    
     return this.usersService.findOne(id);
   }
   @Patch('update')
