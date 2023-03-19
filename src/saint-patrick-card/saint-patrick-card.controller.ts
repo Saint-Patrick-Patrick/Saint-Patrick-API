@@ -1,15 +1,17 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { SaintPatrickCardService } from './saint-patrick-card.service';
-import { CreateSaintPatrickCardDto } from './dto/create-saint-patrick-card.dto';
 import { UpdateSaintPatrickCardDto } from './dto/update-saint-patrick-card.dto';
+import { Req } from '@nestjs/common/decorators';
+import SaintPatrickCard from './entities/saint-patrick-card.entity';
 
 @Controller('saint-patrick-card')
 export class SaintPatrickCardController {
   constructor(private readonly saintPatrickCardService: SaintPatrickCardService) {}
 
   @Post()
-  create(@Body() createSaintPatrickCardDto: CreateSaintPatrickCardDto) {
-    return this.saintPatrickCardService.create(createSaintPatrickCardDto);
+  async authUser(@Req() req: Request & { user: any }): Promise<SaintPatrickCard> {
+    const { id } = req.user;
+    return this.saintPatrickCardService.create(id);
   }
 
   @Get()

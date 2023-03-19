@@ -7,8 +7,8 @@ export class Card {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'integer'})
-  cardNumber: number;
+  @Column({ type: 'varchar'})
+  cardNumber: string;
 
   @Column({type:'varchar'})
   cardHolderName:string
@@ -29,6 +29,7 @@ export class Card {
   securityPin?: string;
 
   @ManyToMany(() => User, user => user.cards)
+  @JoinTable()
   users: User[];
 
   @Column({ type: 'enum', enum: Status, default: Status.ACTIVE })
