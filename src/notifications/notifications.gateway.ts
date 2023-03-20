@@ -14,7 +14,11 @@ import { Server, Socket } from 'socket.io';
 import Notification from './entities/notification.entity';
 import { Injectable } from '@nestjs/common';
 
-@WebSocketGateway()
+@WebSocketGateway(81,{
+  cors:{
+    origin:'*'
+  }
+})
 @Injectable()
 export class NotificationsGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server:Server 
