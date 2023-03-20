@@ -19,11 +19,8 @@ import { SaintPatrickCard } from './saint-patrick-card/entities/saint-patrick-ca
 import { NotificationsModule } from './notifications/notifications.module';
 import Notification from './notifications/entities/notification.entity';
 
-
 @Module({
   imports: [
-    forwardRef(() => SaintPatrickCardModule), // Aplicando forwardRef() aquí
-    forwardRef(() => UsersModule), // Aplicando forwardRef() aquí
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({

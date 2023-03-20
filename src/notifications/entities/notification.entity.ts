@@ -6,7 +6,7 @@ export class Notification {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'text', nullable:true })
+  @Column({ type: 'text', nullable:false })
   mensagge: string;
 
 

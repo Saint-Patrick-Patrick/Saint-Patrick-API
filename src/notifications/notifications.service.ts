@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import User from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
@@ -9,16 +10,26 @@ import Notification from './entities/notification.entity';
 export class NotificationsService {
   constructor(
     @InjectRepository(Notification)
-    private notificationsRepository: Repository<Notification>,
+    private readonly notificationsRepository: Repository<Notification>,
+    @InjectRepository(User)
+    private readonly userRepo: Repository<User>,
   ) {}
 
-  async create(createNotificationDto: CreateNotificationDto): Promise<Notification> {
-    const newNotification = this.notificationsRepository.create(createNotificationDto);
-    return await this.notificationsRepository.save(newNotification);
+  async createNotification(userId:String, mensagge:any): Promise<Notification> {
+    const users = this.userRepo.find();
+    const newNotification = await this.notificationsRepository.create({
+      mensagge,
+      to: users[0],
+      from: users[1]
+    });
+    await this.notificationsRepository.save(newNotification);
+    return newNotification;
   }
 
-  async findAll(id:number): Promise<Notification[]> {
-    return await this.notificationsRepository.find({where:{id}});
+  async getNotifications(data:string): Promise<Notification[]> {
+    console.log(data);
+    
+    return await this.notificationsRepository.find();
   }
 
   async findOne(id: number): Promise<Notification> {
