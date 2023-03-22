@@ -19,6 +19,11 @@ export class TransactionsService {
   ) {}
   private readonly configService: ConfigService;
 
+
+  /// diagrama
+  createTransactions(createTransactionsDto): void{
+  }
+
   findAll(): Promise<Transactions[]>{
     return this.transactionsRepo.find({
       relations:{user:true}
@@ -27,5 +32,7 @@ export class TransactionsService {
   findOne(id:number):Promise<Transactions>{
     return this.transactionsRepo.findOneBy({id})
   }
-
+//  private readonly seLaBanca(){
+//   return
+//  }
 }
