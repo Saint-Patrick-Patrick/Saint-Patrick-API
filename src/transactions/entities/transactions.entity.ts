@@ -1,5 +1,6 @@
 import User from 'src/users/entities/user.entity';
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToOne, JoinColumn } from 'typeorm';
+import { Wallet } from '../../wallet/entities/wallet.entity';
 
 @Entity({ name: 'Transactions' })
 export class Transactions {
@@ -13,7 +14,7 @@ export class Transactions {
   @Column({type:'varchar'})
   from: string;
 
-  @Column({type:'integer'})
+  @Column({name: 'amountTransfer', type:'integer'})
   amount: number;
 
   @Column({type:'varchar', length:8 })
@@ -23,7 +24,11 @@ export class Transactions {
   hour: string;
 
   @ManyToOne(() => User, (user) => user)
-  user: User
+  user: User;
+
+  @OneToOne(() => Wallet)
+  @JoinColumn()
+  wallet: Wallet;
 }
 
 export default Transactions;

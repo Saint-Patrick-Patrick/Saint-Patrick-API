@@ -1,6 +1,7 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn, OneToMany } from 'typeorm';
 import { SaintPatrickCard } from '../../saint-patrick-card/entities/saint-patrick-card.entity';
 import { User } from '../../users/entities/user.entity';
+import { Transactions } from '../../transactions/entities/transactions.entity';
 import { Status } from 'src/constants/contansts';
 
 @Entity({ name: 'wallet' })
@@ -14,7 +15,7 @@ export class Wallet {
   @Column({ type: 'text', nullable: true, unique: true })
   alias: string;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2 })
+  @Column({ name: 'amount', type: 'decimal', precision: 10, scale: 2 })
   amount: number;
 
   @Column({ type: 'enum', enum: Status, default: Status.ACTIVE })
@@ -26,4 +27,7 @@ export class Wallet {
 
   @OneToOne(() => User, (user) => user.wallet)
   user: User;
+
+  @OneToMany(() => Transactions, transaction => transaction.wallet)
+  transactions: Transactions[];
 }

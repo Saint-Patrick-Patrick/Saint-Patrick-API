@@ -7,7 +7,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateTransactionsDto } from './dto/create-transactions.dto';
-import { plainToClass } from 'class-transformer';
+
 import { ConfigService } from '@nestjs/config';
 import Transactions from './entities/transactions.entity';
 
