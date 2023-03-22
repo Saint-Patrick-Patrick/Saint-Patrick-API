@@ -12,11 +12,11 @@ import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
 import { Server, Socket } from 'socket.io';
 import Notification from './entities/notification.entity';
-import { Injectable } from '@nestjs/common';
+import { Injectable, UseGuards } from '@nestjs/common';
 
 @WebSocketGateway(81,{
   cors:{
-    origin:'*'
+    origin:'*',
   }
 })
 @Injectable()
@@ -47,6 +47,7 @@ export class NotificationsGateway implements OnGatewayInit, OnGatewayConnection,
 
   @SubscribeMessage('getNotifications')
   async handleGetNotifications(@MessageBody() data: { userId: string }): Promise<Notification[]> {
+    //aca
     const notifications = await this.notificationsService.getNotifications(data.userId);
     return notifications;
   }

@@ -16,6 +16,10 @@ export class TransactionsModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(AuthMiddleware)
-      .forRoutes({ path: 'transactions/update', method: RequestMethod.PATCH });
+
+      .forRoutes(
+        { path: 'transactions/update', method: RequestMethod.PATCH },
+        { path: 'transactions/create', method: RequestMethod.POST },
+      );
   }
 }
