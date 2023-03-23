@@ -25,7 +25,7 @@ export class Wallet {
   @JoinColumn()
   saintPatrickCard: SaintPatrickCard;
 
-  @OneToOne(() => User, (user) => user.wallet)
+  @OneToOne(() => User, (user) => user.wallet, { eager: true })
   user: User;
 
   @OneToMany(() => Transactions, transaction => transaction.wallet)

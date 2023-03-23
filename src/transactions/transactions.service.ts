@@ -30,7 +30,7 @@ export class TransactionsService {
     return amount > 0;
   }
 
- async getToInfo(cvu: string, alias: string, cbu: string): Promise<{ cvu: string; cbu: string; alias: string; toWallet: Wallet }> {
+  async getToInfo(cvu: string, alias: string, cbu: string): Promise<{ cvu: string; cbu: string; alias: string; toWallet: Wallet; toUser: User }> {
     const wallet = await this.walletsRepo.findOne({
       where: [{ cvu }, { alias }],
       relations: ['user']
@@ -42,9 +42,10 @@ export class TransactionsService {
     }
 
     if(wallet){
-      return { cvu: wallet.cvu, alias: wallet.alias, toWallet: wallet, toUser: user.wallet };
+      return { cvu: wallet.cvu, alias: wallet.alias, cbu: null, toWallet: wallet, toUser: wallet.user };
     }
-    return { cvu: card.wallet.cvu, cbu: card.cbu, alias: card.wallet.alias, toWallet: card.wallet, toUser: card.user };
+    
+    return { cvu:null, cbu: card.cbu, alias: null, toWallet: null, toUser: card.users[0] };
   }
 
 
