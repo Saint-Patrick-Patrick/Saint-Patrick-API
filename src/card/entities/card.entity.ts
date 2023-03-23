@@ -25,6 +25,9 @@ export class Card {
   @Column({type:'varchar', length:12})
   ID: string;
 
+  @Column({type:'varchar', length:12})
+  cbu: string;
+
   @Column({ type: 'varchar', length: 4 })
   securityPin?: string;
 

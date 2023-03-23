@@ -1,38 +1,71 @@
+import { Injectable } from '@nestjs/common';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+
+import { Transactions } from './entities/transactions.entity';
+import User from 'src/users/entities/user.entity';
 import {
-  BadRequestException,
-  Injectable,
   NotFoundException,
   UnauthorizedException,
-} from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { CreateTransactionsDto } from './dto/create-transactions.dto';
-
-import { ConfigService } from '@nestjs/config';
-import Transactions from './entities/transactions.entity';
+} from '@nestjs/common/exceptions';
+import { Wallet } from 'src/wallet/entities/wallet.entity';
+import { Card } from 'src/card/entities/card.entity';
 
 @Injectable()
 export class TransactionsService {
   constructor(
     @InjectRepository(Transactions)
     private transactionsRepo: Repository<Transactions>,
+    @InjectRepository(Wallet)
+    @InjectRepository(User)
+    private userRepo: Repository<User>,
+    @InjectRepository(Wallet)
+    private walletsRepo: Repository<Wallet>,
+    @InjectRepository(Card)
+    private cardsRepo: Repository<Card>,
   ) {}
-  private readonly configService: ConfigService;
 
-
-  /// diagrama
-  createTransactions(createTransactionsDto): void{
+  //Falta esto
+  async validateAmount(amount: number): Promise<boolean> {
+    return amount > 0;
   }
 
-  findAll(): Promise<Transactions[]>{
-    return this.transactionsRepo.find({
-      relations:{user:true}
+ async getToInfo(cvu: string, alias: string, cbu: string): Promise<{ cvu: string; cbu: string; alias: string; toWallet: Wallet }> {
+    const wallet = await this.walletsRepo.findOne({
+      where: [{ cvu }, { alias }],
+      relations: ['user']
     });
-  };
-  findOne(id:number):Promise<Transactions>{
-    return this.transactionsRepo.findOneBy({id})
+
+    const card = await this.cardsRepo.findOne({ where: { cbu }, relations: ['user'] });
+    if (!wallet && !card) {
+      throw new NotFoundException('Destinatario no encontrado');
+    }
+
+    if(wallet){
+      return { cvu: wallet.cvu, alias: wallet.alias, toWallet: wallet, toUser: user.wallet };
+    }
+    return { cvu: card.wallet.cvu, cbu: card.cbu, alias: card.wallet.alias, toWallet: card.wallet, toUser: card.user };
   }
-//  private readonly seLaBanca(){
-//   return
-//  }
+
+
+  async getFromInfo(userId: number): Promise<User> {
+  
+    const user = await this.userRepo.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new UnauthorizedException('Usuario no autorizado');
+    }
+    return user;
+  }
+
+  async createTransaction(data: Object): Promise<Transactions> {
+    // Aquí debes implementar la lógica para crear la transacción.
+    // Por ejemplo:
+    const transaction = new Transactions();
+    transaction.to = data.to;
+    transaction.toUser = data.toUser;
+    transaction.toType = data.toType;
+    transaction.fromUser = data.fromUser;
+    transaction.amount = data.amount;
+    return this.transactionsRepo.save(transaction);
+  }
 }
