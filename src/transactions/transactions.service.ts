@@ -25,7 +25,7 @@ export class TransactionsService {
     private cardsRepo: Repository<Card>,
   ) {}
 
-  //Falta esto
+
   async validateAmount(amount: number, userId: number): Promise<boolean> {
     const amountUser = await this.userRepo
       .createQueryBuilder('user')
@@ -82,7 +82,7 @@ export class TransactionsService {
   transaction.from = userTo.id;
   transaction.amount = amount;
 
-  // Agregar la fecha de la transferencia
+ 
   const currentDate = new Date();
   const formattedDate = `${currentDate.getDate()}-${currentDate.getMonth() + 1}-${currentDate.getFullYear()}`;
   transaction.date = formattedDate;
