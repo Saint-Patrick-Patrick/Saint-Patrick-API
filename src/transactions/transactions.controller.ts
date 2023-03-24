@@ -71,13 +71,13 @@ export class TransactionsController {
 
   @Post('/create')      
   async createTransaction(
-    @Body() createTransactionsDto: CreateTransactionsDto,
+    @Body() createTransactionsDto: CreateTransactionsDto, 
     @Req() req: Request & { user: any },
   ): Promise<Transactions> {
     const { cbu, cvu, alias } = createTransactionsDto;
 
     // Validar si el monto es válido 
-    const isValidAmount: boolean = await this.transactionsService.validateAmount(createTransactionsDto.amount);
+    const isValidAmount: boolean = await this.transactionsService.validateAmount(createTransactionsDto.amount, req.user.id );
     if (!isValidAmount) {
         throw new BadRequestException('Invalid amount');
     }
@@ -86,16 +86,10 @@ export class TransactionsController {
     const toInfo = await this.transactionsService.getToInfo(cbu, cvu, alias);
 
     // Obtener información del remitente
-    const user = await this.transactionsService.getFromInfo(toInfo.toUser.id);
+    const userTo = await this.transactionsService.getFromInfo(toInfo.toUser.id);
 
     // Crear la transacción
-    const transaction = await this.transactionsService.createTransaction({
-      to: toInfo.to,
-      toUser: toInfo.toUser,
-      toType: toInfo.toType,
-      fromUser: fromInfo,
-      amount: createTransactionsDto.amount,
-    });
+    const transaction = await this.transactionsService.createTransaction(userTo ,req.user, createTransactionsDto.amount);
 
     return transaction; 
   }

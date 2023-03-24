@@ -26,28 +26,46 @@ export class TransactionsService {
   ) {}
 
   //Falta esto
-  async validateAmount(amount: number): Promise<boolean> {
-    return amount > 0;
+  async validateAmount(amount: number, userId: number): Promise<boolean> {
+    const amountUser = await this.userRepo
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.wallet', 'wallet')
+      .leftJoinAndSelect('wallet.userWallet', 'userWallet')
+      .select('SUM(userWallet.amount)', 'amount')
+      .where('user.id = :userId', { userId })
+      .getRawOne();
+    
+    return amount <= amountUser.amount;
   }
+  
 
-  async getToInfo(cvu: string, alias: string, cbu: string): Promise<{ cvu: string; cbu: string; alias: string; toWallet: Wallet; toUser: User }> {
+  async getToInfo(cvu: string, alias: string, cbu: string): Promise<{ cvu: string; cbu: string; alias: string; toWallet: Wallet; toUser: User, toType: string }> {
+    let toType: string;
+    let toUser: User;
+    let toWallet: Wallet | null = null;
+  
     const wallet = await this.walletsRepo.findOne({
       where: [{ cvu }, { alias }],
       relations: ['user']
     });
-
+  
     const card = await this.cardsRepo.findOne({ where: { cbu }, relations: ['user'] });
     if (!wallet && !card) {
       throw new NotFoundException('Destinatario no encontrado');
     }
-
-    if(wallet){
-      return { cvu: wallet.cvu, alias: wallet.alias, cbu: null, toWallet: wallet, toUser: wallet.user };
+  
+    if (wallet) {
+      toType = 'alias' in wallet ? 'alias' : 'cvu';
+      toUser = wallet.user;
+      toWallet = wallet;
+    } else {
+      toType = 'cbu';
+      toUser = card.users[0];
     }
-    
-    return { cvu:null, cbu: card.cbu, alias: null, toWallet: null, toUser: card.users[0] };
+  
+    return { cvu: wallet?.cvu || null, alias: wallet?.alias || null, cbu: card?.cbu || null, toWallet, toUser, toType };
   }
-
+  
 
   async getFromInfo(userId: number): Promise<User> {
   
@@ -58,15 +76,18 @@ export class TransactionsService {
     return user;
   }
 
-  async createTransaction(data: Object): Promise<Transactions> {
-    // Aquí debes implementar la lógica para crear la transacción.
-    // Por ejemplo:
-    const transaction = new Transactions();
-    transaction.to = data.to;
-    transaction.toUser = data.toUser;
-    transaction.toType = data.toType;
-    transaction.fromUser = data.fromUser;
-    transaction.amount = data.amount;
-    return this.transactionsRepo.save(transaction);
-  }
+  async createTransaction(userTo: any ,user:any, amount: number): Promise<Transactions> {
+  const transaction = new Transactions();
+  transaction.to = user.id;
+  transaction.from = userTo.id;
+  transaction.amount = amount;
+
+  // Agregar la fecha de la transferencia
+  const currentDate = new Date();
+  const formattedDate = `${currentDate.getDate()}-${currentDate.getMonth() + 1}-${currentDate.getFullYear()}`;
+  transaction.date = formattedDate;
+  transaction.fromType = userTo.fromType;
+  return this.transactionsRepo.save(transaction);
+}
+
 }
