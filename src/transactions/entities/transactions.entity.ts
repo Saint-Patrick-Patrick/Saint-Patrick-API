@@ -22,8 +22,8 @@ export class Transactions {
   @Column({type:'varchar', length:8 })
   hour: string;
 
-  @ManyToOne(() => User, (user) => user)
-  user: User
+  @ManyToOne(() => User, (user) => user.transactions)
+  user: User;
 }
 
 export default Transactions;

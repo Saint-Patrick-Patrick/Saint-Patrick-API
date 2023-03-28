@@ -12,6 +12,7 @@ import {
 import { TransactionsService } from './transactions.service';
 import { CreateTransactionsDto } from './dto/create-transactions.dto';
 import { AuthMiddleware } from './middleware/auth.middleware';
+import Transactions from './entities/transactions.entity';
 @Controller('transactions')
 export class TransactionsController {
   constructor(
@@ -23,9 +24,8 @@ export class TransactionsController {
   //   return this.TransactionsService.create(CreateTransactionsDto);
   // }
 
-  @Get('/all')
-  async findAll(){
+  @Get()
+  async findAll():Promise<Transactions[]>{
     return this.transactionsService.findAll();
-  }
-
+  };
 }

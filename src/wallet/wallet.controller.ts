@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { WalletService } from './wallet.service';
 import { CreateWalletDto } from './dto/create-wallet.dto';
 import { UpdateWalletDto } from './dto/update-wallet.dto';
+import { Wallet } from './entities/wallet.entity';
 
 @Controller('wallet')
 export class WalletController {
@@ -12,19 +13,26 @@ export class WalletController {
     return this.walletService.create(createWalletDto);
   }
 
+  @Post('addMoney/:id')
+  async addMoneyWallet(
+    @Param('walletId') walletId:string, @Body() amount:number, card_number:number
+    ) : Promise<string | undefined>{
+      return await this.walletService.addMoney(+walletId, amount, card_number)
+  }
+  
   @Get()
-  findAll() {
-    return this.walletService.findAll();
+  async findAll() : Promise<Wallet[]>{
+    return await this.walletService.findAll();
   }
 
   @Get(':walletId')
-  findOne(@Param('walletId') walletId: string) {
-    return this.walletService.findOne(+walletId);
+  async findOne(@Param('walletId') walletId: string) :Promise<Wallet | undefined>{
+    return await this.walletService.findOne(+walletId);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateWalletDto: UpdateWalletDto) {
-    return this.walletService.update(+id, updateWalletDto);
+  @Patch(':walletId')
+  async update(@Param('walletId') walletId: string, @Body() updateWalletDto: UpdateWalletDto) : Promise<Wallet> {
+    return await this.walletService.update(+walletId, updateWalletDto);
   }
 
   @Delete(':id')

@@ -23,6 +23,7 @@ export class User {
   password: string;
 
   @ManyToMany(() => Card, card => card.users)
+  @JoinTable()
   cards: Card[];
 
   @OneToOne(() => Picture, { cascade: true })
@@ -33,8 +34,8 @@ export class User {
   @JoinColumn()
   wallet: Wallet;
 
-
-  @OneToMany(()=> Transactions, (transactions)=> transactions)
+  @OneToMany(()=> Transactions, transactions => transactions.user)
+  @JoinColumn()
   transactions: Transactions[];
 
   @Column({ type: 'enum', enum: Status, default: Status.ACTIVE })

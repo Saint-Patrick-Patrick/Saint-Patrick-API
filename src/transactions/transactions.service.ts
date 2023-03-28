@@ -19,13 +19,18 @@ export class TransactionsService {
   ) {}
   private readonly configService: ConfigService;
 
-  findAll(): Promise<Transactions[]>{
-    return this.transactionsRepo.find({
+  async findAll(): Promise<Transactions[]>{
+     return await this.transactionsRepo.find({
       relations:{user:true}
     });
   };
-  findOne(id:number):Promise<Transactions>{
-    return this.transactionsRepo.findOneBy({id})
+  async findOne(id:number):Promise<Transactions | undefined>{
+    const transaction = await this.transactionsRepo.findOne({
+      relations:{user:true},
+      where:{id}
+    });
+    if(transaction)
+      throw new NotFoundException('Transfer not found')
+    return transaction;
   }
-
 }

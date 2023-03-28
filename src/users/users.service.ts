@@ -79,7 +79,7 @@ export class UsersService {
 
   async findAll(): Promise<User[]>{
     return await this.usersRepo.find({
-      relations:{cards:true, wallet:true, picture:true}
+      relations:{ picture:true, wallet:true, transactions:true, cards:true}
     });
   }
 
