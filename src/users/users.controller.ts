@@ -23,7 +23,8 @@ export class UsersController {
 
   @Post('register')
   async register(
-    @Body() createUserDTO: CreateUserDto,
+    @Body() 
+    createUserDTO: CreateUserDto,
   ): Promise<{ user: User; token: any }> {
     return this.usersService.create(createUserDTO);
   }
@@ -34,13 +35,14 @@ export class UsersController {
   }
 
   @Get()
-  async findAll() : Promise<User[] | []> {
+  async findAll() : Promise<User[]> {
     return await this.usersService.findAll();
   }
 
   @Get('auth')
   async authUser(@Req() req: Request & { user: any }): Promise<User> {
     const { id } = req.user;
+    
     return this.usersService.findOne(id);
   }
   @Patch('update')

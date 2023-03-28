@@ -15,7 +15,7 @@ export class WalletController {
 
   @Post('addMoney/:id')
   async addMoneyWallet(
-    @Param('walletId') walletId:string, @Body() amount:number, card_number:number
+    @Param('walletId') walletId:string, @Body() amount:number, card_number:string
     ) : Promise<string | undefined>{
       return await this.walletService.addMoney(+walletId, amount, card_number)
   }

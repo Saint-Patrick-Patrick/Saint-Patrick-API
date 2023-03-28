@@ -4,7 +4,15 @@ export class CreateCardDto {
   
   @IsNotEmpty()
   @IsNumber()
-  card_number?: number;
+  cardNumber?: string;
+
+  @IsNotEmpty()
+  @IsString()
+  cardHolderName: string
+
+  @IsNotEmpty()
+  @IsString()
+  cbu:string
 
   @IsOptional()
   @IsEnum(Status)
@@ -22,11 +30,6 @@ export class CreateCardDto {
   @IsNotEmpty()
   @IsString()
   expirationDate?: string;
-
-  @IsNotEmpty()
-  @IsString()
-  @Matches(/^[A-Z0-9]{4}$/)
-  securityPin?: string; // <- Cambio de string a string porque el parametro va a recibir una string
 
   @IsNotEmpty()
   @IsNumber()

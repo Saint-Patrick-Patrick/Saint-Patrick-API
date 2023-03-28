@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module,forwardRef } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -16,7 +16,8 @@ import { Wallet } from './wallet/entities/wallet.entity';
 import { Card } from './card/entities/card.entity';
 import { CardModule } from './card/card.module';
 import { SaintPatrickCard } from './saint-patrick-card/entities/saint-patrick-card.entity';
-
+import { NotificationsModule } from './notifications/notifications.module';
+import Notification from './notifications/entities/notification.entity';
 
 @Module({
   imports: [
@@ -29,12 +30,12 @@ import { SaintPatrickCard } from './saint-patrick-card/entities/saint-patrick-ca
         username: configService.get<string>('PGUSERNAME'),
         password: configService.get<string>('PGPASSWORD'),
         database: configService.get<string>('PGDATABASE'),
-        entities:[Transactions,User, Picture, Wallet, Card,SaintPatrickCard],
+        entities:[Transactions,User, Picture, Wallet, Card,SaintPatrickCard, Notification],
         synchronize:true,
       }),
       inject: [ConfigService],
     }),
-    TypeOrmModule.forFeature([User, Transactions, Picture, Wallet, Card,SaintPatrickCard]),
+    TypeOrmModule.forFeature([User, Transactions, Picture, Wallet, Card,SaintPatrickCard, Notification]),
     ConfigModule.forRoot({
       envFilePath: '.env',
       isGlobal: true,
@@ -45,7 +46,8 @@ import { SaintPatrickCard } from './saint-patrick-card/entities/saint-patrick-ca
     WalletModule,
     PictureModule,
     CardModule,
-    SaintPatrickCardModule
+    SaintPatrickCardModule,
+    NotificationsModule,
     // aca van todos los modulos
     ],
   controllers: [AppController],

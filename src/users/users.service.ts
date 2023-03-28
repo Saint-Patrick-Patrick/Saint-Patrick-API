@@ -21,8 +21,8 @@ import { WalletService } from 'src/wallet/wallet.service';
 export class UsersService {
   constructor(
     @InjectRepository(User) private usersRepo: Repository<User>,
-    private readonly configService: ConfigService,
     private readonly walletService: WalletService,
+    private readonly configService: ConfigService,
   ) {}
 
   async create(
@@ -77,10 +77,14 @@ export class UsersService {
     };
   }
 
-  async findAll(): Promise<User[]>{
-    return await this.usersRepo.find({
-      relations:{ picture:true, wallet:true, transactions:true, cards:true}
-    });
+  async findAll(): Promise<User[]> {
+    return await this.usersRepo
+    .createQueryBuilder('user')
+    .leftJoinAndSelect('user.wallet', 'wallet')
+    .leftJoinAndSelect('user.picture', 'picture')
+    .leftJoinAndSelect('user.cards', 'cards')
+    .getMany();
+
   }
 
   async findByEmail(email: string): Promise<User | undefined> {
@@ -88,11 +92,14 @@ export class UsersService {
   }
 
   async findOne(id: number) {
-    const user = await this.usersRepo.findOne({
-      where: { id },
-      select: ['id', 'firstname', 'lastname', 'email'],
-      relations: ['wallet', 'cards', 'picture'],
-    });
+
+    const user = await this.usersRepo
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.wallet', 'wallet')
+      .innerJoinAndSelect('wallet.saintPatrickCard', 'saintPatrickCard')
+      .where('user.id = :id', { id })
+      .getOne();
+
 
     if (!user) throw new NotFoundException(`User with ID ${id} not found`);
 
@@ -115,6 +122,7 @@ export class UsersService {
     }
     return this.usersRepo.delete(id);
   }
+ 
   private async generateToken(user: User) {
     const token = jwt.sign(
       {

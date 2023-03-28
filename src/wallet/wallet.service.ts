@@ -147,7 +147,7 @@ export class WalletService {
       where:{id}
     });
   }
-
+ 
   async update(
     id: number, updateWalletDto: UpdateWalletDto
     ): Promise<Wallet> {
@@ -164,7 +164,7 @@ export class WalletService {
   }
 
   async addMoney(
-    amount:number, card_number:number , idWallet: number
+    idWallet: number, amount:number, card_number:string
     ) : Promise<string>{
       const card: Card | undefined = await this.cardsService.findOneByCardNumber(card_number);
       if(!card) 
