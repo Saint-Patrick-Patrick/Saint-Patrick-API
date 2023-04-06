@@ -1,6 +1,7 @@
 import { User } from 'src/users/entities/user.entity';
-import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinTable, ManyToOne, JoinColumn } from 'typeorm';
 import { Status } from 'src/constants/contansts';
+
 
 @Entity({ name: 'card' })
 export class Card {
@@ -25,6 +26,9 @@ export class Card {
   @Column({type:'varchar', length:12})
   ID: string;
 
+  @Column({type:'varchar', length:12})
+  cbu: string;
+
   @Column({ type: 'varchar', length: 4 })
   securityPin?: string;
 
@@ -34,6 +38,5 @@ export class Card {
 
   @Column({ type: 'enum', enum: Status, default: Status.ACTIVE })
   status: Status;
+
 }
-
-

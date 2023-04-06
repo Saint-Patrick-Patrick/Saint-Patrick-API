@@ -1,5 +1,12 @@
 import User from 'src/users/entities/user.entity';
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToOne, JoinColumn } from 'typeorm';
+import { Wallet } from '../../wallet/entities/wallet.entity';
+
+enum Type {
+  CVU = 'cvu',
+  CBU = 'cbu',
+  ALIAS = 'alias',
+}
 
 @Entity({ name: 'Transactions' })
 export class Transactions {
@@ -10,20 +17,28 @@ export class Transactions {
   @Column({type:'varchar'})
   to: string;
 
+  @Column({type:'enum', enum: Type})
+  toType: Type;
+
   @Column({type:'varchar'})
   from: string;
 
-  @Column({type:'integer'})
+  @Column({name: 'amountTransfer', type:'integer'})
   amount: number;
 
   @Column({type:'varchar', length:8 })
   date: string;
 
-  @Column({type:'varchar', length:8 })
-  hour: string;
+  @Column({type:'enum', enum: Type})
+  fromType: Type;
+
 
   @ManyToOne(() => User, (user) => user)
-  user: User
+  user: User;
+
+  @OneToOne(() => Wallet)
+  @JoinColumn()
+  wallet: Wallet;
 }
 
 export default Transactions;
