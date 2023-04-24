@@ -93,14 +93,17 @@ export class UsersService {
 
   async findOne(id: number) {
 
-    const user = await this.usersRepo
-      .createQueryBuilder('user')
-      .leftJoinAndSelect('user.wallet', 'wallet')
-      .innerJoinAndSelect('wallet.saintPatrickCard', 'saintPatrickCard')
-      .where('user.id = :id', { id })
-      .getOne();
+    const user = await this.usersRepo.findOne({
+      where: { id },
+      relations: {
+        wallet: true,
+        picture: true,
+        cards: true,
+      }
+    });
 
-
+    console.log(user);
+    
     if (!user) throw new NotFoundException(`User with ID ${id} not found`);
 
     return user;
