@@ -10,6 +10,7 @@ import {
   OneToOne,
   JoinColumn,
   ManyToMany,
+  JoinTable,
 } from 'typeorm';
 import { Status } from 'src/constants/contansts';
 import Notification from 'src/notifications/entities/notification.entity';
@@ -31,7 +32,7 @@ export class User {
   @Column({ type: 'varchar', nullable: true })
   password: string;
 
-  @ManyToMany(() => Card, (card) => card.users)
+  @ManyToMany(() => Card, card => card.user)
   @JoinColumn()
   cards: Card[];
 
@@ -43,7 +44,8 @@ export class User {
   @JoinColumn()
   wallet: Wallet;
 
-  @OneToMany(() => Transactions, (transactions) => transactions)
+  @OneToMany(()=> Transactions, transactions => transactions.user)
+  @JoinColumn()
   transactions: Transactions[];
 
   @Column({ type: 'enum', enum: Status, default: Status.ACTIVE })

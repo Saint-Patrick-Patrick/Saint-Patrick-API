@@ -1,15 +1,19 @@
 import { 
   Injectable,
   NotFoundException,
-
+  BadRequestException
    } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Card } from './entities/card.entity';
+
 import { generate } from 'creditcard-generator';
 import User from 'src/users/entities/user.entity';
 import { UpdateCardDto } from './dto/update-card.dto';
 import { plainToClass } from 'class-transformer';
+import { CreateCardDto } from './dto/create-card.dto';
+import { Card } from './entities/card.entity';
+import { cardNumbers } from 'src/constants/contansts';
+
 
 @Injectable()
 export class CardService {
@@ -19,13 +23,25 @@ export class CardService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
   ) {}
-  async create(card: Card, userId: number, ): Promise<Card> {
+  async create(createCardDto: CreateCardDto, userId: number, ): Promise<Card> {
+    const verifyCard: Card | null = await this.findOneByCardNumber(createCardDto.cardNumber);
+    if(verifyCard) 
+      throw new BadRequestException('La tarjeta ya esta registrada en un usuario');
+    const user: User | null = await this.userRepository.findOne({relations:{cards:true},where:{ id: userId }});
+    if(!user)
+    throw new BadRequestException('UPS el usuario no existe');
 
-    const user = await this.userRepository.findOne({relations:{cards:true},where:{ id: userId }});
-    card.users = [...card.users,user];
+    createCardDto.amount = Math.floor(Math.random() * 100000);
+    const existCardExternal: number = cardNumbers[createCardDto.cardNumber[0]];
+    if(!existCardExternal)
+      throw new BadRequestException('Numbero de tarjeta invalido');
+    
+    const card: Card = await this.cardRepository.create(createCardDto);
+    card.user = user;
+    user.cards = [...user.cards, card];
     return await this.cardRepository.save(card);
   }
-  
+
   async findOneByUserId(userId: number): Promise<Card> {
     const card = await this.cardRepository
       .createQueryBuilder('card')
@@ -37,7 +53,7 @@ export class CardService {
 
   async findOneByCardNumber(cardNumber:string): Promise<Card | undefined>{
     return await this.cardRepository.findOne({
-      relations:{users:true},
+      relations:{user:true},
       where: {cardNumber}
     });
   }
@@ -48,7 +64,7 @@ export class CardService {
 
   async findOne(cardId: number): Promise<Card | undefined> {
     return await this.cardRepository.findOne({
-      relations:{users:true},
+      relations:{user:true},
       where:{id:cardId}
     });
   }

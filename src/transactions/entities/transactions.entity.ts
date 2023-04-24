@@ -33,7 +33,7 @@ export class Transactions {
   fromType: Type;
 
 
-  @ManyToOne(() => User, (user) => user)
+  @ManyToOne(() => User, (user) => user.wallet)
   user: User;
 
   @OneToOne(() => Wallet)

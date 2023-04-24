@@ -16,7 +16,6 @@ export class TransactionsService {
   constructor(
     @InjectRepository(Transactions)
     private transactionsRepo: Repository<Transactions>,
-    @InjectRepository(Wallet)
     @InjectRepository(User)
     private userRepo: Repository<User>,
     @InjectRepository(Wallet)
@@ -25,6 +24,20 @@ export class TransactionsService {
     private cardsRepo: Repository<Card>,
   ) {}
 
+  async findAll(): Promise<Transactions[]>{
+     return await this.transactionsRepo.find({
+      relations:{user:true}
+    });
+  };
+  async findOne(id:number):Promise<Transactions | undefined>{
+    const transaction = await this.transactionsRepo.findOne({
+      relations:{user:true},
+      where:{id}
+    });
+    if(transaction)
+      throw new NotFoundException('Transfer not found')
+    return transaction;
+  }
 
   async validateAmount(amount: number, userId: number): Promise<boolean> {
     const amountUser = await this.userRepo
@@ -60,7 +73,7 @@ export class TransactionsService {
       toWallet = wallet;
     } else {
       toType = 'cbu';
-      toUser = card.users[0];
+      toUser = card.user;
     }
   
     return { cvu: wallet?.cvu || null, alias: wallet?.alias || null, cbu: card?.cbu || null, toWallet, toUser, toType };
