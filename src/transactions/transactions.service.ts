@@ -25,7 +25,6 @@ export class TransactionsService {
     private cardsRepo: Repository<Card>,
   ) {}
 
-
   async validateAmount(amount: number, userId: number): Promise<boolean> {
     const amountUser = await this.userRepo
       .createQueryBuilder('user')
@@ -34,26 +33,39 @@ export class TransactionsService {
       .select('SUM(userWallet.amount)', 'amount')
       .where('user.id = :userId', { userId })
       .getRawOne();
-    
+
     return amount <= amountUser.amount;
   }
-  
 
-  async getToInfo(cvu: string, alias: string, cbu: string): Promise<{ cvu: string; cbu: string; alias: string; toWallet: Wallet; toUser: User, toType: string }> {
+  async getToInfo(
+    cvu: string,
+    alias: string,
+    cbu: string,
+  ): Promise<{
+    cvu: string;
+    cbu: string;
+    alias: string;
+    toWallet: Wallet;
+    toUser: User;
+    toType: string;
+  }> {
     let toType: string;
     let toUser: User;
     let toWallet: Wallet | null = null;
-  
+
     const wallet = await this.walletsRepo.findOne({
       where: [{ cvu }, { alias }],
-      relations: ['user']
+      relations: ['user'],
     });
-  
-    const card = await this.cardsRepo.findOne({ where: { cbu }, relations: ['user'] });
+
+    const card = await this.cardsRepo.findOne({
+      where: { cbu },
+      relations: ['user'],
+    });
     if (!wallet && !card) {
       throw new NotFoundException('Destinatario no encontrado');
     }
-  
+
     if (wallet) {
       toType = 'alias' in wallet ? 'alias' : 'cvu';
       toUser = wallet.user;
@@ -62,13 +74,18 @@ export class TransactionsService {
       toType = 'cbu';
       toUser = card.users[0];
     }
-  
-    return { cvu: wallet?.cvu || null, alias: wallet?.alias || null, cbu: card?.cbu || null, toWallet, toUser, toType };
+
+    return {
+      cvu: wallet?.cvu || null,
+      alias: wallet?.alias || null,
+      cbu: card?.cbu || null,
+      toWallet,
+      toUser,
+      toType,
+    };
   }
-  
 
   async getFromInfo(userId: number): Promise<User> {
-  
     const user = await this.userRepo.findOne({ where: { id: userId } });
     if (!user) {
       throw new UnauthorizedException('Usuario no autorizado');
@@ -76,18 +93,22 @@ export class TransactionsService {
     return user;
   }
 
-  async createTransaction(userTo: any ,user:any, amount: number): Promise<Transactions> {
-  const transaction = new Transactions();
-  transaction.to = user.id;
-  transaction.from = userTo.id;
-  transaction.amount = amount;
+  async createTransaction(
+    userTo: any,
+    user: any,
+    amount: number,
+  ): Promise<Transactions> {
+    const transaction = new Transactions();
+    transaction.to = user.id;
+    transaction.from = userTo.id;
+    transaction.amount = amount;
 
- 
-  const currentDate = new Date();
-  const formattedDate = `${currentDate.getDate()}-${currentDate.getMonth() + 1}-${currentDate.getFullYear()}`;
-  transaction.date = formattedDate;
-  transaction.fromType = userTo.fromType;
-  return this.transactionsRepo.save(transaction);
-}
-
+    const currentDate = new Date();
+    const formattedDate = `${currentDate.getDate()}-${
+      currentDate.getMonth() + 1
+    }-${currentDate.getFullYear()}`;
+    transaction.date = formattedDate;
+    transaction.fromType = userTo.fromType;
+    return this.transactionsRepo.save(transaction);
+  }
 }
