@@ -1,5 +1,5 @@
 import { User } from 'src/user/entities/user.entity';
-import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinTable, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinTable, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 import { Status } from 'src/constants/contansts';
 
 
@@ -29,12 +29,9 @@ export class Card {
   @Column({type:'varchar', length:12})
   cbu: string;
 
-  @Column({ type: 'varchar', length: 4 })
-  securityPin?: string;
-
-  @ManyToMany(() => User, user => user.cards)
-  @JoinTable()
-  users: User[];
+  @OneToMany(() => User, user => user.cards)
+  @JoinColumn()
+  user: User;
 
   @Column({ type: 'enum', enum: Status, default: Status.ACTIVE })
   status: Status;

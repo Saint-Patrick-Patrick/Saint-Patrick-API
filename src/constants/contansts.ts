@@ -7,14 +7,9 @@ export enum Status {
     BLOCKED = 'blocked',
     CANCELED = 'canceled',
   }
-
-  export const cloudinaryConfig = {
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
-  }
-  export const swaggerConfig = new DocumentBuilder()
-  .setTitle("Rocket Banck API")
-    .setDescription("Endpoints")
-    .setVersion("1.0")
-    .build();
+export const cardNumbers:object = {
+  4:true,
+  5:true,
+  34:true,
+  37:true,
+}

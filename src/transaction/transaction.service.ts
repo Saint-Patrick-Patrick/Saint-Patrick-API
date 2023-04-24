@@ -12,10 +12,10 @@ import { Wallet } from 'src/wallet/entities/wallet.entity';
 import { Card } from 'src/card/entities/card.entity';
 
 @Injectable()
-export class TransactionService {
+export class Transactionervice {
   constructor(
     @InjectRepository(Transaction)
-    private transactionRepo: Repository<Transaction>,
+    private transactionReposirory: Repository<Transaction>,
     @InjectRepository(Wallet)
     @InjectRepository(User)
     private userRepo: Repository<User>,
@@ -24,6 +24,21 @@ export class TransactionService {
     @InjectRepository(Card)
     private cardsRepo: Repository<Card>,
   ) {}
+
+  async findAll(): Promise<Transaction[]>{
+     return await this.transactionReposirory.find({
+      relations:{user:true}
+    });
+  };
+  async findOne(id:number):Promise<Transaction | undefined>{
+    const transaction = await this.transactionReposirory.findOne({
+      relations:{user:true},
+      where:{id}
+    });
+    if(transaction)
+      throw new NotFoundException('Transfer not found')
+    return transaction;
+  }
 
   async validateAmount(amount: number, userId: number): Promise<boolean> {
     const amountUser = await this.userRepo
@@ -72,7 +87,7 @@ export class TransactionService {
       toWallet = wallet;
     } else {
       toType = 'cbu';
-      toUser = card.users[0];
+      toUser = card.user;
     }
 
     return {
@@ -109,6 +124,6 @@ export class TransactionService {
     }-${currentDate.getFullYear()}`;
     transaction.date = formattedDate;
     transaction.fromType = userTo.fromType;
-    return this.transactionRepo.save(transaction);
+    return this.transactionReposirory.save(transaction);
   }
 }

@@ -14,11 +14,6 @@ export class UpdateCardDto extends PartialType(CreateCardDto) {
   expirationDate?: string;
 
   @IsNotEmpty()
-  @IsString()
-  @Matches(/^[A-Z0-9]{4}$/)
-  securityPin?: string;
-
-  @IsNotEmpty()
   @IsNumber()
   amount?: number;
 }

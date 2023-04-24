@@ -69,6 +69,10 @@ export class TransactionController {
   //   });
   // }
 
+  @Get()
+  async findAll():Promise<Transactions[]>{
+    return this.transactionsService.findAll();
+  };
   @Post('/create')      
   async createTransaction(
     @Body() createTransactionDto: CreateTransactionDto, 

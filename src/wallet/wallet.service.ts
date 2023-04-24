@@ -163,12 +163,11 @@ export class WalletService {
     return `This action removes a #${id} wallet`;
   }
 
-  async addFunds(
-    amount:number, card_number:string , idWallet: number
-    ){
-      const cardExternal: Card | undefined = await this.cardsService.findOneByCardNumber(card_number);
-      const cardSaint: SaintPatrickCard | undefined = await this.saintPatrickCardService.findOneByCardNumber(card_number);
-      if(!cardExternal && !cardSaint) 
+  async addMoney(
+    idWallet: number, amount:number, card_number:string
+    ) : Promise<string>{
+      const card: Card | undefined = await this.cardsService.findOneByCardNumber(card_number);
+      if(!card) 
         throw new BadRequestException('Unexpected error')
       const wallet = await this.findOne(idWallet);
       if(!wallet)
@@ -178,32 +177,19 @@ export class WalletService {
       const year:number = Number(String(dateOnly.getFullYear).slice(2));
       const month:number = dateOnly.getMonth();
 
-      const dateCardExpires:string = cardExternal.expirationDate.split('/')[0];
+      const dateCardExpires:string = card.expirationDate.split('/')[0];
       const cardExpiredMonth:number = Number(dateCardExpires[0]);
       const cardExpiredYear:number = Number(dateCardExpires[1]);
 
-      if(cardExternal){
-        if( cardExpiredMonth < month && cardExpiredYear < year) 
-          throw new HttpException('Expired Card', 402);
-        if(cardExternal.amount < amount)
-          throw new HttpException('Card without funds', 402);
-        return await this.calculateAddFounds(amount, wallet, cardExternal, null);
-      }else{
-        if(cardSaint.wallet.cvu === wallet.cvu)
-          throw new BadRequestException('Ups unexpected error');
-        if(cardSaint.wallet.amount < amount)
+      if( cardExpiredMonth < month && cardExpiredYear < year) 
+        throw new HttpException('Expired Card', 402);
+      if(card.amount < amount)
         throw new HttpException('Card without funds', 402);
-        return await this.calculateAddFounds(amount, wallet, null, cardSaint);
-      }
-    }
-    private async calculateAddFounds(
-      amount: number, wallet: Wallet, card: Card | undefined, cardSaint:SaintPatrickCard | undefined
-      ) : Promise<Wallet | undefined>{
-        const updateWalletDto:UpdateWalletDto = {...wallet, amount: wallet.amount + amount};
-        const newAmountCard:number = card? card.amount - amount : cardSaint.wallet.amount - amount;
-        card?
-          await this.cardsService.update(card.id, {...card,amount:newAmountCard}):
-          await this.update(cardSaint.wallet.id, {...cardSaint.wallet,amount:newAmountCard})
-        return await this.update(wallet.id, updateWalletDto);
-    }
+
+      const updateWalletDto:UpdateWalletDto = {...wallet, amount: wallet.amount + amount};
+      const newAmountCard:number = card.amount - amount ;
+        await this.cardsService.update(card.id, {...card,amount:newAmountCard})
+        await this.update(wallet.id, updateWalletDto);
+        return 'transfer realized successfully';
+    };
 }
