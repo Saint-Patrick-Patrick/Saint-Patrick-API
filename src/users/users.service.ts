@@ -122,6 +122,7 @@ export class UsersService {
     }
     return this.usersRepo.delete(id);
   }
+ 
   private async generateToken(user: User) {
     const token = jwt.sign(
       {
