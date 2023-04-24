@@ -26,7 +26,7 @@ export class SaintPatrickCardController {
 
   @Get('/user/:userId')
   findOneByUserId(@Param('userId') userId: string) {
-    return this.saintPatrickCardService.findOneByUserId(+userId);
+    return this.saintPatrickCardService.findOneByUserId(userId);
   }
 
   @Patch(':id')

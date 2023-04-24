@@ -1,6 +1,6 @@
 import { User } from 'src/user/entities/user.entity';
 import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinTable, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
-import { Status } from 'src/constants/contansts';
+import { Status } from 'src/core/constants/contansts';
 
 
 @Entity({ name: 'card' })

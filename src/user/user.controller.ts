@@ -15,6 +15,8 @@ import { ApiTags } from '@nestjs/swagger';
 import User from './entities/user.entity';
 import { Request } from 'express';
 import { Req } from '@nestjs/common/decorators';
+import { GetUser } from 'src/core/auth/decorators';
+import { AuthUserDTO } from 'src/core/auth/dto/auth-user.dto';
 
 @ApiTags('users')
 @Controller('users')
@@ -25,7 +27,7 @@ export class UserController {
   async register(
     @Body() 
     createUserDTO: CreateUserDto,
-  ): Promise<{ user: User; token: any }> {
+  ): Promise<{ user: User; token: string }> {
     return this.userService.create(createUserDTO);
   }
 
@@ -40,21 +42,19 @@ export class UserController {
   }
 
   @Get('auth')
-  async authUser(@Req() req: Request & { user: any }): Promise<User> {
-    const { id } = req.user;
-    
-    return this.userService.findOne(id);
+  async authUser(@GetUser() user: AuthUserDTO ): Promise<User> {
+    return this.userService.findOne(user.id);
   }
   @Patch('update')
   async update(
-    req: Request & { user: any },
+    @GetUser() user: AuthUserDTO,
     @Body() updateUserDto: UpdateUserDto,
-  ): Promise<User> {
-    return this.userService.update(req.user.id, updateUserDto);
+  ) {
+    return this.userService.update(user.id, updateUserDto);
   }
 
   @Delete(':id')
   async remove(@Param('id') id: string) {
-    return this.userService.remove(+id);
+    return this.userService.remove(id);
   }
 }

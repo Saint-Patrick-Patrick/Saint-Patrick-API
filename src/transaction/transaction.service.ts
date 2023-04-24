@@ -100,7 +100,7 @@ export class TransactionService {
     };
   }
 
-  async getFromInfo(userId: number): Promise<User> {
+  async getFromInfo(userId: string): Promise<User> {
     const user = await this.userRepo.findOne({ where: { id: userId } });
     if (!user) {
       throw new UnauthorizedException('Usuario no autorizado');

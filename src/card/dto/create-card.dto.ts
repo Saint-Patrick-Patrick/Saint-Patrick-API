@@ -1,5 +1,5 @@
 import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, Length, Matches } from 'class-validator';
-import { Status } from 'src/constants/contansts';
+import { Status } from 'src/core/constants/contansts';
 export class CreateCardDto {
   
   @IsNotEmpty()

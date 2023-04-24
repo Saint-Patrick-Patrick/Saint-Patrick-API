@@ -6,7 +6,7 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { Wallet } from '../../wallet/entities/wallet.entity';
-import { Status } from 'src/constants/contansts';
+import { Status } from 'src/core/constants/contansts';
 @Entity({ name: 'SaintPatrickCard' })
 export class SaintPatrickCard {
   @PrimaryGeneratedColumn()

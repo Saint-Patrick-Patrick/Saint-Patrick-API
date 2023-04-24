@@ -19,7 +19,7 @@ export class CardController {
   }
 
   @Post()
-  async create(@Body() createCardDto: CreateCardDto, @Param('userId') userId: number): Promise<Card | undefined> {
+  async create(@Body() createCardDto: CreateCardDto, @Param('userId') userId: string): Promise<Card | undefined> {
     return this.cardService.create(createCardDto, userId);
   }
 

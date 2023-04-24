@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as morgan from 'morgan';
-import { CORS, cloudinaryConfig, swaggerConfig } from './constants';
+import { CORS, cloudinaryConfig, swaggerConfig } from './core/constants';
 import { ValidationPipe, ClassSerializerInterceptor } from '@nestjs/common';
 import { useContainer } from 'class-validator';
 import { CustomExceptionFilter } from './custom-exception.filter';

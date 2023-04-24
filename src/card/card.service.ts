@@ -12,7 +12,7 @@ import { UpdateCardDto } from './dto/update-card.dto';
 import { plainToClass } from 'class-transformer';
 import { CreateCardDto } from './dto/create-card.dto';
 import { Card } from './entities/card.entity';
-import { cardNumbers } from 'src/constants/contansts';
+import { cardNumbers } from 'src/core/constants/contansts';
 
 
 @Injectable()
@@ -23,7 +23,7 @@ export class CardService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
   ) {}
-  async create(createCardDto: CreateCardDto, userId: number, ): Promise<Card> {
+  async create(createCardDto: CreateCardDto, userId: string, ): Promise<Card> {
     const verifyCard: Card | null = await this.findOneByCardNumber(createCardDto.cardNumber);
     if(verifyCard) 
       throw new BadRequestException('La tarjeta ya esta registrada en un usuario');

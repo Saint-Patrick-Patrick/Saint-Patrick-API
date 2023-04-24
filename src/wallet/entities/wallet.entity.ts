@@ -2,7 +2,7 @@ import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn, OneToMany
 import { SaintPatrickCard } from '../../saint-patrick-card/entities/saint-patrick-card.entity';
 import { User } from '../../user/entities/user.entity';
 import { Transaction } from '../../transaction/entities/transaction.entity';
-import { Status } from 'src/constants/contansts';
+import { Status } from 'src/core/constants/contansts';
 
 @Entity({ name: 'wallet' })
 export class Wallet {

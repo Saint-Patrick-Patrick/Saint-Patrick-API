@@ -1,5 +1,5 @@
 import { IsEnum, IsNumber, IsNotEmpty, Matches } from 'class-validator';
-import { Status } from 'src/constants/contansts';
+import { Status } from 'src/core/constants/contansts';
 
 export class CreateSaintPatrickCardDto {
   @IsNumber()

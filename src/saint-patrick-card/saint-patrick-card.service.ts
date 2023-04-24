@@ -25,7 +25,7 @@ export class SaintPatrickCardService {
 
   async create(id: string): Promise<SaintPatrickCard> {
     const wallet: Wallet | undefined = await this.walletRepository.findOne({
-      where: { user: { id: Number(id) } },
+      where: { user: { id } },
       relations: ['user', 'saintPatrickCard'],
     });
 
@@ -66,7 +66,7 @@ export class SaintPatrickCardService {
     return cardNumber.toString();
   }
 
-  async findOneByUserId(userId: number): Promise<SaintPatrickCard> {
+  async findOneByUserId(userId: string): Promise<SaintPatrickCard> {
     const saintPatrickCard: SaintPatrickCard | undefined =
       await this.saintPatrickCardRepository.findOne({
         where: { wallet: { user: { id: userId } } },

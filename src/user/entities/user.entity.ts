@@ -12,13 +12,13 @@ import {
   ManyToMany,
   JoinTable,
 } from 'typeorm';
-import { Status } from 'src/constants/contansts';
+import { Status } from 'src/core/constants/contansts';
 import Notification from 'src/notification/entities/notification.entity';
 
 @Entity({ name: 'user' })
 export class User {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({ type: 'varchar', length: 50, nullable: true })
   firstname: string;

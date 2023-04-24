@@ -11,7 +11,7 @@ import { LoginUserDto } from './dto/login-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import User from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
-import { EXPIRED_TOKEN, SALT } from 'src/constants/contansts';
+import { EXPIRED_TOKEN, SALT } from 'src/core/constants/contansts';
 import { plainToClass } from 'class-transformer';
 import * as jwt from 'jsonwebtoken';
 import { ConfigService } from '@nestjs/config';
@@ -91,7 +91,7 @@ export class UserService {
     return this.userRepository.findOne({ where: { email } });
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
 
     const user = await this.userRepository.findOne({
       where: { id },
@@ -109,24 +109,27 @@ export class UserService {
     return user;
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto) {
+  async update(id: string, updateUserDto: UpdateUserDto) {
     const user = await this.findOne(id);
-    if (!user) throw new NotFoundException(`User with ID ${id} not found`);
-
-    Object.assign(user, updateUserDto);
-    const updatedUser = await this.userRepository.save(user);
-    return plainToClass(User, updatedUser);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    const updatedUser = await this.userRepository.save({
+      ...user,
+      ...updateUserDto,
+    });
+    return updatedUser;
   }
 
-  async remove(id: number) {
-    const user = await this.findOne(+id);
+  async remove(id: string) {
+    const user = await this.findOne(id);
     if (!user) {
       throw new NotFoundException('Usuario no encontrado');
     }
     return this.userRepository.delete(id);
   }
  
-  private async generateToken(user: User) {
+  async generateToken(user: User) {
     const token = jwt.sign(
       {
         id: user.id,
