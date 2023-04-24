@@ -12,7 +12,7 @@ import { Wallet } from 'src/wallet/entities/wallet.entity';
 import { Card } from 'src/card/entities/card.entity';
 
 @Injectable()
-export class Transactionervice {
+export class TransactionService {
   constructor(
     @InjectRepository(Transaction)
     private transactionReposirory: Repository<Transaction>,

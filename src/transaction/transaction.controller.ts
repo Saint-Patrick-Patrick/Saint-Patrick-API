@@ -70,8 +70,8 @@ export class TransactionController {
   // }
 
   @Get()
-  async findAll():Promise<Transactions[]>{
-    return this.transactionsService.findAll();
+  async findAll():Promise<Transaction[]>{
+    return this.transactionService.findAll();
   };
   @Post('/create')      
   async createTransaction(
