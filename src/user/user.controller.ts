@@ -7,7 +7,7 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
-import { UsersService } from './users.service';
+import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
@@ -18,43 +18,43 @@ import { Req } from '@nestjs/common/decorators';
 
 @ApiTags('users')
 @Controller('users')
-export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+export class UserController {
+  constructor(private readonly userService: UserService) {}
 
   @Post('register')
   async register(
     @Body() 
     createUserDTO: CreateUserDto,
   ): Promise<{ user: User; token: any }> {
-    return this.usersService.create(createUserDTO);
+    return this.userService.create(createUserDTO);
   }
 
   @Post('login')
   async login(@Body() loginUserDto: LoginUserDto) {
-    return this.usersService.login(loginUserDto);
+    return this.userService.login(loginUserDto);
   }
 
   @Get()
   async findAll() : Promise<User[]> {
-    return await this.usersService.findAll();
+    return await this.userService.findAll();
   }
 
   @Get('auth')
   async authUser(@Req() req: Request & { user: any }): Promise<User> {
     const { id } = req.user;
     
-    return this.usersService.findOne(id);
+    return this.userService.findOne(id);
   }
   @Patch('update')
   async update(
     req: Request & { user: any },
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<User> {
-    return this.usersService.update(req.user.id, updateUserDto);
+    return this.userService.update(req.user.id, updateUserDto);
   }
 
   @Delete(':id')
   async remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+    return this.userService.remove(+id);
   }
 }

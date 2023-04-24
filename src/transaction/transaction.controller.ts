@@ -10,15 +10,15 @@ import {
   Req,
   BadRequestException,
 } from '@nestjs/common';
-import { TransactionsService } from './transactions.service';
-import { CreateTransactionsDto } from './dto/create-transactions.dto';
+import { TransactionService } from './transaction.service';
+import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { AuthMiddleware } from './middleware/auth.middleware';
 import { Request } from 'express';
-import Transactions from './entities/transactions.entity';
-@Controller('transactions')
-export class TransactionsController {
+import Transaction from './entities/transaction.entity';
+@Controller('transaction')
+export class TransactionController {
   constructor(
-    private readonly transactionsService: TransactionsService,
+    private readonly transactionService: TransactionService,
   ) {}
 
 
@@ -42,7 +42,7 @@ export class TransactionsController {
   
   */
   // @Post('/create')      
-  // async register(@Body() createTransactionsDto: CreateTransactionsDto, @Req() req:Request & {user:any}) {
+  // async register(@Body() createTransactionDto: CreateTransactionDto, @Req() req:Request & {user:any}) {
     
   //   //validar si el monto es valido 
   //   // const (bolean) = service(from, from_type, amount)
@@ -58,38 +58,38 @@ export class TransactionsController {
   //   // const from_user = service(id);
     
     
-  //   const algo = await this.transactionsService.createTransactions({
+  //   const algo = await this.transactionService.createTransaction({
   //    /*
   //    to,
   //    to_User,
   //    to_type,
   //    from_user,
-  //    createTransactionsDto
+  //    createTransactionDto
   //    */
   //   });
   // }
 
   @Post('/create')      
   async createTransaction(
-    @Body() createTransactionsDto: CreateTransactionsDto, 
+    @Body() createTransactionDto: CreateTransactionDto, 
     @Req() req: Request & { user: any },
-  ): Promise<Transactions> {
-    const { cbu, cvu, alias } = createTransactionsDto;
+  ): Promise<Transaction> {
+    const { cbu, cvu, alias } = createTransactionDto;
 
     // Validar si el monto es válido 
-    const isValidAmount: boolean = await this.transactionsService.validateAmount(createTransactionsDto.amount, req.user.id );
+    const isValidAmount: boolean = await this.transactionService.validateAmount(createTransactionDto.amount, req.user.id );
     if (!isValidAmount) {
         throw new BadRequestException('Invalid amount');
     }
 
     // Obtener información del destinatario
-    const toInfo = await this.transactionsService.getToInfo(cbu, cvu, alias);
+    const toInfo = await this.transactionService.getToInfo(cbu, cvu, alias);
 
     // Obtener información del remitente
-    const userTo = await this.transactionsService.getFromInfo(toInfo.toUser.id);
+    const userTo = await this.transactionService.getFromInfo(toInfo.toUser.id);
 
     // Crear la transacción
-    const transaction = await this.transactionsService.createTransaction(userTo ,req.user, createTransactionsDto.amount);
+    const transaction = await this.transactionService.createTransaction(userTo ,req.user, createTransactionDto.amount);
 
     return transaction; 
   }
@@ -98,6 +98,6 @@ export class TransactionsController {
 
   // @Get('/all')
   // async findAll(){
-  //   return this.transactionsService.findAll();
+  //   return this.transactionService.findAll();
   // }
 

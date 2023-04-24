@@ -3,10 +3,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UsersModule } from './users/users.module';
-import { TransactionsModule } from './transactions/transactions.module';
-import User from './users/entities/user.entity';
-import Transactions from './transactions/entities/transactions.entity';
+import { UserModule } from './user/user.module';
+import { TransactionModule } from './transaction/transaction.module';
+import User from './user/entities/user.entity';
+import Transaction from './transaction/entities/transaction.entity';
 import { AuthModule } from './core/auth/auth.module';
 import { WalletModule } from './wallet/wallet.module';
 import { PictureModule } from './picture/picture.module';
@@ -16,8 +16,8 @@ import { Wallet } from './wallet/entities/wallet.entity';
 import { Card } from './card/entities/card.entity';
 import { CardModule } from './card/card.module';
 import { SaintPatrickCard } from './saint-patrick-card/entities/saint-patrick-card.entity';
-import { NotificationsModule } from './notifications/notifications.module';
-import Notification from './notifications/entities/notification.entity';
+import { NotificationModule } from './notification/notification.module';
+import Notification from './notification/entities/notification.entity';
 
 @Module({
   imports: [
@@ -30,24 +30,24 @@ import Notification from './notifications/entities/notification.entity';
         username: configService.get<string>('PGUSERNAME'),
         password: configService.get<string>('PGPASSWORD'),
         database: configService.get<string>('PGDATABASE'),
-        entities:[Transactions,User, Picture, Wallet, Card,SaintPatrickCard, Notification],
+        entities:[Transaction,User, Picture, Wallet, Card,SaintPatrickCard, Notification],
         synchronize:true,
       }),
       inject: [ConfigService],
     }),
-    TypeOrmModule.forFeature([User, Transactions, Picture, Wallet, Card,SaintPatrickCard, Notification]),
+    TypeOrmModule.forFeature([User, Transaction, Picture, Wallet, Card,SaintPatrickCard, Notification]),
     ConfigModule.forRoot({
       envFilePath: '.env',
       isGlobal: true,
     }),
-    TransactionsModule,
-    UsersModule,
+    TransactionModule,
+    UserModule,
     AuthModule,
     WalletModule,
     PictureModule,
     CardModule,
     SaintPatrickCardModule,
-    NotificationsModule,
+    NotificationModule,
     // aca van todos los modulos
     ],
   controllers: [AppController],

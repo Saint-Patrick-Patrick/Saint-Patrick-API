@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { Transactions } from './entities/transactions.entity';
-import User from 'src/users/entities/user.entity';
+import { Transaction } from './entities/transaction.entity';
+import User from 'src/user/entities/user.entity';
 import {
   NotFoundException,
   UnauthorizedException,
@@ -12,10 +12,10 @@ import { Wallet } from 'src/wallet/entities/wallet.entity';
 import { Card } from 'src/card/entities/card.entity';
 
 @Injectable()
-export class TransactionsService {
+export class TransactionService {
   constructor(
-    @InjectRepository(Transactions)
-    private transactionsRepo: Repository<Transactions>,
+    @InjectRepository(Transaction)
+    private transactionRepo: Repository<Transaction>,
     @InjectRepository(Wallet)
     @InjectRepository(User)
     private userRepo: Repository<User>,
@@ -97,8 +97,8 @@ export class TransactionsService {
     userTo: any,
     user: any,
     amount: number,
-  ): Promise<Transactions> {
-    const transaction = new Transactions();
+  ): Promise<Transaction> {
+    const transaction = new Transaction();
     transaction.to = user.id;
     transaction.from = userTo.id;
     transaction.amount = amount;
@@ -109,6 +109,6 @@ export class TransactionsService {
     }-${currentDate.getFullYear()}`;
     transaction.date = formattedDate;
     transaction.fromType = userTo.fromType;
-    return this.transactionsRepo.save(transaction);
+    return this.transactionRepo.save(transaction);
   }
 }

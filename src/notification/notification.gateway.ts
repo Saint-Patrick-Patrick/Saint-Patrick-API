@@ -7,7 +7,7 @@ import {
   OnGatewayInit,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { NotificationsService } from './notifications.service';
+import { NotificationService } from './notification.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
 import { Server, Socket } from 'socket.io';
@@ -20,10 +20,10 @@ import { Injectable, UseGuards } from '@nestjs/common';
   }
 })
 @Injectable()
-export class NotificationsGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
+export class NotificationGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server:Server 
   
-  constructor(private readonly notificationsService: NotificationsService) {}
+  constructor(private readonly notificationService: NotificationService) {}
   handleConnection(client: Socket) {
     const userId = client.handshake.query.userId;
     console.log(`Cliente conectado: ${userId}`);
@@ -45,28 +45,28 @@ export class NotificationsGateway implements OnGatewayInit, OnGatewayConnection,
     client.join(userId);
   }
 
-  @SubscribeMessage('getNotifications')
-  async handleGetNotifications(@MessageBody() data: { userId: string }): Promise<Notification[]> {
+  @SubscribeMessage('getNotification')
+  async handleGetNotification(@MessageBody() data: { userId: string }): Promise<Notification[]> {
     //aca
-    const notifications = await this.notificationsService.getNotifications(data.userId);
-    return notifications;
+    const notification = await this.notificationService.getNotifications(data.userId);
+    return notification;
   }
   @SubscribeMessage('createNotification')
   async createNotification(userId: string, message: string): Promise<Notification> {
     console.log('asd');
     
-    const notification = await this.notificationsService.createNotification(userId, message);
+    const notification = await this.notificationService.createNotification(userId, message);
     this.server.emit(`notification:${userId}`, notification);
     return notification;
   }
   @SubscribeMessage('findOne')
   handleFindOne(@MessageBody() id: number) {
-    return this.notificationsService.findOne(id);
+    return this.notificationService.findOne(id);
   }
 
   @SubscribeMessage('update')
   handleUpdate(@MessageBody() updateNotificationDto: UpdateNotificationDto) {
-    return this.notificationsService.update(
+    return this.notificationService.update(
       updateNotificationDto.id,
       updateNotificationDto,
     );
@@ -74,6 +74,6 @@ export class NotificationsGateway implements OnGatewayInit, OnGatewayConnection,
 
   @SubscribeMessage('remove')
   handleRemove(@MessageBody() id: number) {
-    return this.notificationsService.remove(id);
+    return this.notificationService.remove(id);
   }
 }

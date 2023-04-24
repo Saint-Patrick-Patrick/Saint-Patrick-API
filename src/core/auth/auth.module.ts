@@ -4,8 +4,8 @@ import { AuthController } from './auth.controller';
 import { PassportModule } from '@nestjs/passport';
 import { GoogleStrategy } from '../strategy/google.strategy';
 import { FacebookStrategy } from '../strategy/facebook.strategy';
-import { UsersService } from 'src/users/users.service';
-import User from 'src/users/entities/user.entity';
+import { UserService } from 'src/user/user.service';
+import User from 'src/user/entities/user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { WalletService } from 'src/wallet/wallet.service';
@@ -21,7 +21,7 @@ import SaintPatrickCard from 'src/saint-patrick-card/entities/saint-patrick-card
     AuthService,
     GoogleStrategy,
     FacebookStrategy,
-    UsersService,
+    UserService,
     ConfigService,
     WalletService,
     CardService,

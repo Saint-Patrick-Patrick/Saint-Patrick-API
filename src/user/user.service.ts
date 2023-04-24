@@ -18,9 +18,9 @@ import { ConfigService } from '@nestjs/config';
 import { WalletService } from 'src/wallet/wallet.service';
 
 @Injectable()
-export class UsersService {
+export class UserService {
   constructor(
-    @InjectRepository(User) private usersRepo: Repository<User>,
+    @InjectRepository(User) private userRepository: Repository<User>,
     private readonly walletService: WalletService,
     private readonly configService: ConfigService,
   ) {}
@@ -36,12 +36,12 @@ export class UsersService {
 
     const wallet = await this.walletService.createRandomWallet();
     const hashedPassword = await bcrypt.hashSync(createUserDto.password, SALT);
-    const createdUser = this.usersRepo.create({
+    const createdUser = this.userRepository.create({
       ...createUserDto,
       password: hashedPassword,
       wallet,
     });
-    const user = await this.usersRepo.save(createdUser);
+    const user = await this.userRepository.save(createdUser);
     const token = await this.generateToken(user);
 
     return {
@@ -66,9 +66,9 @@ export class UsersService {
   ): Promise<{ user: User; token: string }> {
     let user = await this.findByEmail(body.email);
     if (!user) {
-      user = await this.usersRepo.create(body);
+      user = await this.userRepository.create(body);
       user.wallet = await this.walletService.createRandomWallet();
-      await this.usersRepo.save(user);
+      await this.userRepository.save(user);
     }
     const token = await this.generateToken(user);
     return {
@@ -78,7 +78,7 @@ export class UsersService {
   }
 
   async findAll(): Promise<User[]> {
-    return await this.usersRepo
+    return await this.userRepository
     .createQueryBuilder('user')
     .leftJoinAndSelect('user.wallet', 'wallet')
     .leftJoinAndSelect('user.picture', 'picture')
@@ -88,12 +88,12 @@ export class UsersService {
   }
 
   async findByEmail(email: string): Promise<User | undefined> {
-    return this.usersRepo.findOne({ where: { email } });
+    return this.userRepository.findOne({ where: { email } });
   }
 
   async findOne(id: number) {
 
-    const user = await this.usersRepo.findOne({
+    const user = await this.userRepository.findOne({
       where: { id },
       relations: {
         wallet: true,
@@ -114,7 +114,7 @@ export class UsersService {
     if (!user) throw new NotFoundException(`User with ID ${id} not found`);
 
     Object.assign(user, updateUserDto);
-    const updatedUser = await this.usersRepo.save(user);
+    const updatedUser = await this.userRepository.save(user);
     return plainToClass(User, updatedUser);
   }
 
@@ -123,7 +123,7 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException('Usuario no encontrado');
     }
-    return this.usersRepo.delete(id);
+    return this.userRepository.delete(id);
   }
  
   private async generateToken(user: User) {

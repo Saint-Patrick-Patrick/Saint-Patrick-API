@@ -7,14 +7,14 @@ import SaintPatrickCard from './entities/saint-patrick-card.entity';
 import { CardService } from 'src/card/card.service';
 import { WalletService } from 'src/wallet/wallet.service';
 import { Card } from 'src/card/entities/card.entity';
-import User from 'src/users/entities/user.entity';
-import { UsersService } from 'src/users/users.service';
+import User from 'src/user/entities/user.entity';
+import { UserService } from 'src/user/user.service';
 import { AuthMiddleware } from 'src/core/middleware/auth.middleware';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Wallet, SaintPatrickCard, Card, User]),],
   controllers: [SaintPatrickCardController],
-  providers: [SaintPatrickCardService,AuthMiddleware , CardService, WalletService, UsersService]
+  providers: [SaintPatrickCardService,AuthMiddleware , CardService, WalletService, UserService]
 })
 export class SaintPatrickCardModule {
   configure(consumer: MiddlewareConsumer) {

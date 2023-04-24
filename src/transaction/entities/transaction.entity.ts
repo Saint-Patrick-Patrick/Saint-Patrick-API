@@ -1,4 +1,4 @@
-import User from 'src/users/entities/user.entity';
+import User from 'src/user/entities/user.entity';
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToOne, JoinColumn } from 'typeorm';
 import { Wallet } from '../../wallet/entities/wallet.entity';
 
@@ -8,8 +8,8 @@ enum Type {
   ALIAS = 'alias',
 }
 
-@Entity({ name: 'Transactions' })
-export class Transactions {
+@Entity({ name: 'transaction' })
+export class Transaction {
 
   @PrimaryGeneratedColumn()
   id: number;
@@ -41,4 +41,4 @@ export class Transactions {
   wallet: Wallet;
 }
 
-export default Transactions;
+export default Transaction;

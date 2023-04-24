@@ -7,7 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Card } from './entities/card.entity';
 import { generate } from 'creditcard-generator';
-import User from 'src/users/entities/user.entity';
+import User from 'src/user/entities/user.entity';
 import { UpdateCardDto } from './dto/update-card.dto';
 import { plainToClass } from 'class-transformer';
 

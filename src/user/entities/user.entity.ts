@@ -1,6 +1,6 @@
 import { Card } from 'src/card/entities/card.entity';
 import Picture from 'src/picture/entities/picture.entity';
-import Transactions from 'src/transactions/entities/transactions.entity';
+import Transaction from 'src/transaction/entities/transaction.entity';
 import { Wallet } from 'src/wallet/entities/wallet.entity';
 import {
   Entity,
@@ -12,7 +12,7 @@ import {
   ManyToMany,
 } from 'typeorm';
 import { Status } from 'src/constants/contansts';
-import Notification from 'src/notifications/entities/notification.entity';
+import Notification from 'src/notification/entities/notification.entity';
 
 @Entity({ name: 'user' })
 export class User {
@@ -43,8 +43,8 @@ export class User {
   @JoinColumn()
   wallet: Wallet;
 
-  @OneToMany(() => Transactions, (transactions) => transactions)
-  transactions: Transactions[];
+  @OneToMany(() => Transaction, (transaction) => transaction)
+  transaction: Transaction[];
 
   @Column({ type: 'enum', enum: Status, default: Status.ACTIVE })
   status: Status;
